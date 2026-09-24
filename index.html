@@ -211,6 +211,26 @@ SELECT value FROM solution;">
         </div>
         <div id="quick-solution-result" class="lu-solution-verdict"></div>
       </div>
+
+      <!-- Quick Interactive Mastermind Input (Revealed after suspect is verified) -->
+      <div id="mastermind-solution-box" class="lu-solution-box" style="display: none; margin-top: 24px; border: 2px solid var(--lu-gold); background: linear-gradient(180deg, #181920 0%, #0F1015 100%);">
+        <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:6px;">
+          <span style="font-size:1.4rem;">👑</span>
+          <h4 style="color: var(--lu-gold); font-size: 1.2rem; margin:0;">
+            Stage 2: Find the Mastermind
+          </h4>
+        </div>
+        <p style="font-size: 0.92rem; color: var(--lu-text); max-width: 620px; margin: 0 auto 14px; line-height:1.6;">
+          The trophy thief has confessed, but who hired him? Query Jeremy Bowers' interview transcript in the <code>interview</code> table. Find mastermind and also verify she is the one:
+        </p>
+        <div class="lu-solution-input-group">
+          <input type="text" id="quick-mastermind-input" class="lu-solution-input" placeholder="e.g. Mastermind Name" onkeydown="if(event.key==='Enter') checkMastermindQuick(this.value)">
+          <button class="lu-btn lu-btn-gold" onclick="checkMastermindQuick(document.getElementById('quick-mastermind-input').value)">
+            Verify Mastermind
+          </button>
+        </div>
+        <div id="quick-mastermind-result" class="lu-solution-verdict"></div>
+      </div>
     </div>
 
     <!-- Step 5: Official Course Project Submission & Canvas Dossier -->

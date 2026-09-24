@@ -340,18 +340,31 @@ if (!customElements.get('sql-exercise')) {
 
 // Handle solution evaluation
 function handleSolutionResult(message, code) {
-  if (message.includes('brains') || message.includes('champagne')) {
+  const msgLower = (message || '').toLowerCase();
+  const codeLower = (code || '').toLowerCase();
+
+  if (msgLower.includes('brains') || msgLower.includes('champagne') || msgLower.includes('incredible forensic detective work') || codeLower.includes('miranda priestly')) {
     // Solved Mastermind (Miranda Priestly)
     studentSession.mastermindSolved = true;
     studentSession.mastermindName = 'Miranda Priestly';
     saveStudentSession();
     renderSubmissionReport();
-  } else if (message.includes('caught who took') || message.includes('found who took') || message.includes('found the murderer')) {
+    updateMastermindUI();
+  } else if (msgLower.includes('caught who took') || msgLower.includes('found who took') || msgLower.includes('found the murderer') || codeLower.includes('jeremy bowers')) {
     // Solved Culprit (Jeremy Bowers)
     studentSession.thiefSolved = true;
     studentSession.thiefName = 'Jeremy Bowers';
     saveStudentSession();
     renderSubmissionReport();
+    updateMastermindUI();
+
+    const mBox = document.getElementById('mastermind-solution-box');
+    if (mBox) {
+      mBox.style.display = 'block';
+      setTimeout(() => {
+        mBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 250);
+    }
   }
 }
 
@@ -372,13 +385,15 @@ function checkSolutionQuick(name) {
     sql,
     results => {
       if (resultDiv && results && results.length > 0 && results[0].values.length > 0) {
-        const msg = results[0].values[0][0];
+        const msg = String(results[0].values[0][0]);
         resultDiv.innerHTML = msg.replace(/\n/g, '<br>');
-        if (msg.includes('champagne') || msg.includes('brains')) {
-          resultDiv.className = 'lu-solution-verdict mastermind';
-          handleSolutionResult(msg, sql);
-        } else if (msg.includes('caught who took') || msg.includes('found who took')) {
+        if (msg.includes('caught who took') || msg.includes('found who took') || clean.toLowerCase() === 'jeremy bowers') {
           resultDiv.className = 'lu-solution-verdict correct';
+          handleSolutionResult(msg, sql);
+          const sInput = document.getElementById('quick-suspect-input');
+          if (sInput) sInput.disabled = true;
+        } else if (msg.includes('champagne') || msg.includes('brains') || msg.includes('Incredible forensic detective work')) {
+          resultDiv.className = 'lu-solution-verdict mastermind';
           handleSolutionResult(msg, sql);
         } else {
           resultDiv.className = 'lu-solution-verdict incorrect';
@@ -394,11 +409,93 @@ function checkSolutionQuick(name) {
   );
 }
 
+function checkMastermindQuick(name) {
+  if (!name || !name.trim()) {
+    alert('Please enter the mastermind suspect name.');
+    return;
+  }
+  const clean = name.trim().replace(/'/g, "''");
+  const sql = `INSERT INTO solution VALUES (1, '${clean}'); SELECT value FROM solution;`;
+  const resultDiv = document.getElementById('quick-mastermind-result');
+  if (resultDiv) {
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = '<div style="color:var(--lu-gold);">Verifying mastermind with campus security...</div>';
+  }
+
+  executeSQL(
+    sql,
+    results => {
+      if (resultDiv && results && results.length > 0 && results[0].values.length > 0) {
+        const msg = String(results[0].values[0][0]);
+        if (msg.includes('champagne') || msg.includes('brains') || msg.includes('Incredible forensic detective work') || clean.toLowerCase() === 'miranda priestly') {
+          resultDiv.className = 'lu-solution-verdict mastermind';
+          resultDiv.innerHTML = msg.replace(/\n/g, '<br>');
+          handleSolutionResult(msg, sql);
+          const mInput = document.getElementById('quick-mastermind-input');
+          if (mInput) mInput.disabled = true;
+        } else {
+          resultDiv.className = 'lu-solution-verdict incorrect';
+          resultDiv.innerHTML = "Incorrect mastermind! Query Jeremy Bowers' interview transcript in the <code>interview</code> table. Find mastermind and also verify she is the one.";
+        }
+      }
+    },
+    err => {
+      if (resultDiv) {
+        resultDiv.className = 'lu-solution-verdict incorrect';
+        resultDiv.textContent = 'Error verifying mastermind: ' + err.message;
+      }
+    }
+  );
+}
+
+function updateMastermindUI() {
+  const mBox = document.getElementById('mastermind-solution-box');
+  if (!mBox) return;
+  if (studentSession.thiefSolved) {
+    mBox.style.display = 'block';
+    const sInput = document.getElementById('quick-suspect-input');
+    if (sInput) {
+      sInput.value = studentSession.thiefName;
+      sInput.disabled = true;
+    }
+    const sResult = document.getElementById('quick-solution-result');
+    if (sResult && !sResult.innerHTML) {
+      sResult.style.display = 'block';
+      sResult.className = 'lu-solution-verdict correct';
+      sResult.innerHTML = `<strong>&#9989; Trophy Culprit Caught:</strong> ${escapeHtml(studentSession.thiefName)} confessed he was hired by a mastermind!`;
+    }
+
+    if (studentSession.mastermindSolved) {
+      const mResult = document.getElementById('quick-mastermind-result');
+      if (mResult) {
+        mResult.style.display = 'block';
+        mResult.className = 'lu-solution-verdict mastermind';
+        mResult.innerHTML = `<strong>&#127942; Mastermind Exposed:</strong> ${escapeHtml(studentSession.mastermindName)}<br>Case closed! The Golden Lion trophy is secured!`;
+      }
+      const mInput = document.getElementById('quick-mastermind-input');
+      if (mInput) {
+        mInput.value = studentSession.mastermindName;
+        mInput.disabled = true;
+      }
+    }
+  } else {
+    mBox.style.display = 'none';
+  }
+}
+
 function renderSubmissionReport() {
   const container = document.getElementById('submission-report-container');
   if (!container) return;
 
   const hash = generateVerificationCode();
+
+  const culpritStatusHtml = studentSession.thiefSolved 
+    ? `<span style="color:#10B981; font-weight:bold;">&#9989; Solved &mdash; ${escapeHtml(studentSession.thiefName)}</span>`
+    : `<span style="color:#DC2626; font-weight:bold;">&#10060; Unsolved</span>`;
+
+  const mastermindStatusHtml = studentSession.mastermindSolved 
+    ? `<span style="color:#B5A36A; font-weight:bold;">&#9989; Solved &mdash; ${escapeHtml(studentSession.mastermindName)}</span>`
+    : `<span style="color:#DC2626; font-weight:bold;">&#10060; Unsolved</span>`;
 
   container.innerHTML = `
     <div class="lu-certificate">
@@ -417,8 +514,8 @@ function renderSubmissionReport() {
       </div>
 
       <div class="lu-cert-status">
-        <p><strong>Culprit (Jeremy Bowers):</strong> ${studentSession.thiefSolved ? '&#9989; Solved' : '&#10060; Unsolved'}</p>
-        <p style="margin-top:4px;"><strong>Mastermind (Miranda Priestly):</strong> ${studentSession.mastermindSolved ? '&#9989; Solved' : '&#10060; Unsolved'}</p>
+        <p><strong>Trophy Culprit:</strong> ${culpritStatusHtml}</p>
+        <p style="margin-top:6px;"><strong>Mastermind:</strong> ${mastermindStatusHtml}</p>
       </div>
 
       <div style="margin-bottom:16px;">
@@ -456,10 +553,10 @@ function downloadSubmissionJSON() {
       course: studentSession.course
     },
     findings: {
-      culpritIdentified: studentSession.thiefSolved,
-      culpritName: studentSession.thiefName,
-      mastermindExposed: studentSession.mastermindSolved,
-      mastermindName: studentSession.mastermindName,
+      culpritSolved: studentSession.thiefSolved,
+      culpritName: studentSession.thiefSolved ? studentSession.thiefName : "Unsolved",
+      mastermindSolved: studentSession.mastermindSolved,
+      mastermindName: studentSession.mastermindSolved ? studentSession.mastermindName : "Unsolved",
       queriesExecuted: studentSession.queriesRun.length
     },
     verificationHash: generateVerificationCode(),
@@ -481,14 +578,14 @@ function copyCanvasSubmission() {
   const text = `
 LINDENWOOD UNIVERSITY - THE MISSING GOLDEN LION SUBMISSION
 ==========================================================
-Student: ${studentSession.name} (ID: ${studentSession.studentId})
-Course: ${studentSession.course}
-Email: ${studentSession.email}
+Student: ${studentSession.name || 'Anonymous'} (ID: ${studentSession.studentId || 'N/A'})
+Course: ${studentSession.course || 'N/A'}
+Email: ${studentSession.email || 'N/A'}
 Timestamp: ${new Date().toLocaleString()}
 
 FINDINGS:
-- Trophy Thief: ${studentSession.thiefSolved ? studentSession.thiefName : 'Incomplete'}
-- Mastermind: ${studentSession.mastermindSolved ? studentSession.mastermindName : 'Incomplete'}
+- Trophy Culprit: ${studentSession.thiefSolved ? studentSession.thiefName : 'Unsolved'}
+- Mastermind: ${studentSession.mastermindSolved ? studentSession.mastermindName : 'Unsolved'}
 - Forensic Queries Executed: ${studentSession.queriesRun.length}
 - Verification Token: ${generateVerificationCode()}
 ==========================================================
@@ -507,6 +604,7 @@ function escapeHtml(str) {
 window.addEventListener('DOMContentLoaded', () => {
   loadStudentSession();
   initDatabase('lindenwood-mystery.db');
+  updateMastermindUI();
 
   // Toggle schema diagram
   const schemaToggle = document.getElementById('show-schema-link');
