@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Lindenwood SQL Mystery: The Missing Golden Lion</title>
+  <meta name="description" content="A trophy has disappeared from Lindenwood University. Can you find it using SQL? An interactive forensic database mystery.">
+
+  <!-- CodeMirror CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/codemirror.min.css">
+  
+  <!-- Lindenwood Mystery Stylesheet -->
+  <link rel="stylesheet" href="css/lindenwood.css">
+
+  <!-- CodeMirror & SQL Support Scripts -->
+  <script src="scripts/codemirror.js"></script>
+  <script src="scripts/codemirrorsql.js"></script>
+  <script src="scripts/autorefresh.js"></script>
+  
+  <!-- Mystery App Controller -->
+  <script src="scripts/mystery_app.js"></script>
+</head>
+<body>
+
+  <!-- University Top Accent Bar -->
+  <div class="lu-topbar">
+    <div style="display:flex; align-items:center; gap:16px;">
+      <span>LINDENWOOD UNIVERSITY &bull; ST. CHARLES, MISSOURI</span>
+      <span id="lu-student-info" class="lu-student-badge"></span>
+    </div>
+    <div>
+      <span class="lu-db-status">
+        <span id="db-status-dot" class="lu-status-dot"></span>
+        <span id="db-status-label">Connecting database...</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- Main Collegiate Header -->
+  <header class="lu-header">
+    <div class="lu-header-content">
+      <div class="lu-brand">
+        <!-- Stylized LU Lion Emblem -->
+        <svg class="lu-logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="46" fill="#0B0C10" stroke="#B5A36A" stroke-width="4"/>
+          <circle cx="50" cy="50" r="41" fill="#14151B" stroke="#857542" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <path d="M30 26 L38 26 L38 64 L58 64 L58 72 L30 72 Z" fill="#B5A36A" />
+          <path d="M54 26 L62 26 L62 58 Q62 68 72 68 Q82 68 82 58 L82 26 L90 26 L90 58 Q90 76 72 76 Q54 76 54 58 Z" fill="#E5C07B" />
+        </svg>
+        <div class="lu-brand-text">
+          <h1>THE LINDENWOOD <span>SQL MYSTERY</span></h1>
+          <p>Department of Computer Science &bull; Forensic Investigation Case File</p>
+        </div>
+      </div>
+
+      <div class="lu-header-actions" style="display:flex; gap:10px;">
+        <button class="lu-btn lu-btn-outline" onclick="promptStudentLogin()">
+          <span>&#128100;</span> Student Login
+        </button>
+        <button class="lu-btn lu-btn-gold" onclick="switchTab('submission')">
+          <span>&#128221;</span> Project Submission
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================================================================
+       HERO POSTER CARD: THE MISSING LION (Landing Screen)
+       ====================================================================== -->
+  <div id="mystery-poster" class="lu-poster-hero">
+    <div class="lu-poster-tag">THE LINDENWOOD SQL MYSTERY</div>
+    <div style="font-size:3.5rem; margin-bottom:8px;">&#129409;</div>
+    <h2 class="lu-poster-title">THE MISSING <span>GOLDEN LION</span></h2>
+    <p class="lu-poster-desc">
+      A university trophy has disappeared from Lindenwood University.<br>
+      Campus security needs your forensic SQL skills.<br>
+      <strong>Can you find it?</strong>
+    </p>
+    <div>
+      <button class="lu-btn lu-btn-gold lu-btn-lg" onclick="startMystery()">
+        <span>&#128269;</span> START THE MYSTERY
+      </button>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MAIN INVESTIGATION WORKSPACE (Revealed after Start)
+       ====================================================================== -->
+  <div id="mystery-main-content" style="display:none;">
+
+    <!-- Navigation Tabs -->
+    <nav class="lu-nav-tabs">
+      <div class="lu-tabs-container">
+        <button class="lu-tab active" data-tab="investigation">
+          <span>&#128269;</span> Investigation &amp; Terminal
+        </button>
+        <button class="lu-tab" data-tab="schema">
+          <span>&#128451;</span> Database Schema
+        </button>
+        <button class="lu-tab" data-tab="solution">
+          <span>&#127919;</span> Solution Checker
+        </button>
+        <button class="lu-tab" data-tab="submission">
+          <span>&#127891;</span> Project Submission
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="lu-main">
+
+      <!-- ====================================================================
+           TAB 1: INVESTIGATION & TERMINAL
+           ==================================================================== -->
+      <section id="tab-investigation" class="tab-content active">
+
+        <!-- Background & Mission Dossier -->
+        <div class="lu-card lu-card-gold-border" style="display:flex; gap:24px; flex-wrap:wrap; align-items:center;">
+          <img src="clue-illustration.png" alt="Evidence board" style="width:160px; height:auto; border-radius:8px; border:2px solid var(--lu-border-gold);">
+          <div style="flex:1; min-width:280px;">
+            <div style="color:var(--lu-gold); font-size:0.85rem; font-weight:700; letter-spacing:1px; text-transform:uppercase;">
+              CASE DOSSIER &bull; INCIDENT #2025-1018
+            </div>
+            <h2 style="font-size:1.6rem; color:var(--lu-text-bright); margin:4px 0 10px;">
+              The Missing Golden Lion Trophy
+            </h2>
+            <p style="color:var(--lu-text); line-height:1.7;">
+              The <strong>Golden Lion Trophy</strong> was last seen at Lindenwood University on <strong>October 18, 2025</strong>. The trophy disappeared sometime during the evening, but security does not know exactly when or who took it.
+            </p>
+            <p style="color:var(--lu-text); margin-top:8px; line-height:1.7;">
+              Unfortunately, the original incident report has been misplaced.<br>
+              You remember only three things:
+            </p>
+            <div style="background:#121319; border:1px solid var(--lu-border-gold); padding:10px 16px; border-radius:6px; margin:10px 0; font-family:var(--lu-font-mono); font-size:0.9rem;">
+              &bull; <strong>Date:</strong> October 18, 2025 (<code>20251018</code>)<br>
+              &bull; <strong>Location:</strong> Lindenwood University<br>
+              &bull; <strong>Incident:</strong> Missing Golden Lion Trophy
+            </div>
+            <p style="color:var(--lu-gold-light); font-weight:600;">
+              Your Mission: Retrieve the incident report, follow the evidence through the database, and discover who took the Golden Lion Trophy!
+            </p>
+          </div>
+        </div>
+
+        <!-- SQL Terminal Card -->
+        <div class="lu-card">
+          <div class="lu-card-header">
+            <h3 class="lu-card-title">
+              <span>&#9889;</span> Forensic SQL Workbench
+            </h3>
+            <div style="font-size:0.85rem; color:var(--lu-text-muted);">
+              Run query: <kbd style="background:#2C2D38; padding:2px 6px; border-radius:4px; color:var(--lu-gold);">Ctrl</kbd> + <kbd style="background:#2C2D38; padding:2px 6px; border-radius:4px; color:var(--lu-gold);">Enter</kbd>
+            </div>
+          </div>
+
+          <!-- Quick Clue Preset Chips -->
+          <div style="font-size:0.85rem; color:var(--lu-text-muted); margin-bottom:6px;">Investigation Presets:</div>
+          <div class="lu-quick-queries">
+            <button class="lu-chip" onclick="workbenchEditor.setValue('SELECT name FROM sqlite_master WHERE type = \'table\';'); runWorkbenchQuery();">
+              1. Show Database Tables
+            </button>
+            <button class="lu-chip" onclick="workbenchEditor.setValue('SELECT * FROM security_report WHERE date = 20251018;'); runWorkbenchQuery();">
+              2. Retrieve Oct 18 Incident Report
+            </button>
+            <button class="lu-chip" onclick="workbenchEditor.setValue('SELECT sql FROM sqlite_master WHERE name = \'security_report\';'); runWorkbenchQuery();">
+              3. Check Report Schema
+            </button>
+            <button class="lu-chip" onclick="workbenchEditor.setValue('SELECT * FROM building;'); runWorkbenchQuery();">
+              4. Explore Campus Buildings
+            </button>
+          </div>
+
+          <!-- SQL Editor Box -->
+          <div class="lu-editor-box">
+            <div class="lu-editor-toolbar">
+              <span class="lu-editor-toolbar-title">SQL Query Input</span>
+              <div style="display:flex; gap:8px;">
+                <button class="lu-btn lu-btn-outline lu-btn-sm" onclick="workbenchEditor.setValue('');">Clear</button>
+                <button class="lu-btn lu-btn-gold lu-btn-sm" onclick="runWorkbenchQuery()">Run Query &#x21e9;</button>
+              </div>
+            </div>
+            <textarea id="workbench-code">SELECT * 
+  FROM security_report 
+ WHERE date = 20251018;</textarea>
+          </div>
+
+          <!-- Results Header & Display -->
+          <div class="lu-results-header">
+            <span id="results-count">Results Ready</span>
+            <div style="display:flex; gap:12px; align-items:center;">
+              <span id="results-time"></span>
+              <button class="lu-btn lu-btn-outline lu-btn-sm" onclick="exportCurrentToCSV()">Export CSV</button>
+            </div>
+          </div>
+          <div id="workbench-results" class="lu-results-container">
+            <div style="padding: 24px; text-align: center; color: var(--lu-text-muted);">
+              Click <strong>Run Query</strong> or press <strong>Ctrl+Enter</strong> to view results.
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ====================================================================
+           TAB 2: DATABASE SCHEMA EXPLORER
+           ==================================================================== -->
+      <section id="tab-schema" class="tab-content">
+        
+        <div class="lu-card">
+          <div class="lu-card-header">
+            <h3 class="lu-card-title">
+              <span>&#128451;</span> Lindenwood University Database Schema
+            </h3>
+            <span style="font-size:0.85rem; color:var(--lu-gold);">14 Relational Tables</span>
+          </div>
+          <p style="color:var(--lu-text-muted); margin-bottom:16px;">
+            Explore how students, staff, card swipe access, vehicles, parking records, events, and interviews connect across campus:
+          </p>
+          <div style="text-align: center; background: #0E0F14; padding: 12px; border-radius: 8px; border: 1px solid var(--lu-border); overflow-x: auto;">
+            <img src="schema.svg" alt="Lindenwood Database Relational Schema" style="max-width: 100%; height: auto; border-radius: 6px;">
+          </div>
+        </div>
+
+        <!-- Live Table Cards -->
+        <div class="lu-card">
+          <div class="lu-card-header">
+            <h3 class="lu-card-title">
+              <span>&#128196;</span> Interactive Table Catalog
+            </h3>
+            <span style="font-size:0.85rem; color:var(--lu-gold);">Click Preview to inspect records</span>
+          </div>
+          <div id="schema-cards-container" class="lu-schema-grid">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ====================================================================
+           TAB 3: SOLUTION CHECKER
+           ==================================================================== -->
+      <section id="tab-solution" class="tab-content">
+        
+        <div class="lu-card lu-card-gold-border">
+          <div class="lu-card-header">
+            <h3 class="lu-card-title">
+              <span>&#127919;</span> Case Solution Verification Station
+            </h3>
+          </div>
+          <p style="line-height: 1.7; margin-bottom:16px;">
+            Who took the Golden Lion Trophy? Once you have pieced together the witness statements, door swipes, and campus records, enter the suspect's name below to verify your deduction against the police database.
+          </p>
+
+          <!-- Suspect Input Box -->
+          <div class="lu-solution-box">
+            <h4 style="color: var(--lu-gold); margin-bottom: 8px; font-size: 1.15rem;">Suspect Verification</h4>
+            <p style="font-size: 0.9rem; color: var(--lu-text-muted);">
+              Type the suspect's full name (case-sensitive, e.g. <code>First Last</code>)
+            </p>
+            <div class="lu-solution-input-group">
+              <input type="text" id="suspect-input" class="lu-solution-input" placeholder="e.g. First Last" onkeydown="if(event.key==='Enter') checkSolutionSuspect(this.value)">
+              <button class="lu-btn lu-btn-gold" onclick="checkSolutionSuspect(document.getElementById('suspect-input').value)">
+                Check Suspect
+              </button>
+            </div>
+            <div id="solution-verdict" class="lu-solution-verdict"></div>
+          </div>
+
+          <!-- Dynamic Stage 2 Card (Hidden until Stage 1 is solved!) -->
+          <div id="stage-two-challenge-card" class="lu-card" style="display:none; margin-top:24px; border:2px dashed var(--lu-gold); background:rgba(181, 163, 106, 0.05);">
+            <div class="lu-card-header">
+              <h3 class="lu-card-title" style="color:var(--lu-gold);">
+                <span>&#128081;</span> The Second Mystery Unlocked!
+              </h3>
+            </div>
+            <p style="line-height:1.7;">
+              The person who took the trophy has confessed, but they were working for an influential campus mastermind who orchestrated the entire heist!
+            </p>
+            <p style="line-height:1.7; margin-top:8px;">
+              Query the thief's interview transcript in the <code>interview</code> table to follow the money, luxury vehicle, and gala attendance records. When you identify the true mastermind, enter their name above to close the case!
+            </p>
+          </div>
+
+          <!-- Official SQL Solution Insertion Statement -->
+          <div style="margin-top: 24px;">
+            <h4 style="color: var(--lu-text-bright); margin-bottom: 8px;">Or Verify via SQL Insert Command:</h4>
+            <p style="font-size: 0.9rem; color: var(--lu-text-muted); margin-bottom: 12px;">
+              You can also test your solution directly from the SQL workbench:
+            </p>
+            <pre style="background:#0E0F14; padding:12px; border-radius:6px; border:1px solid var(--lu-border); font-family:var(--lu-font-mono); color:var(--lu-gold); font-size:0.9rem; overflow-x:auto;">
+INSERT INTO solution VALUES (1, 'Insert suspect name here');
+SELECT value FROM solution;</pre>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ====================================================================
+           TAB 4: COURSE PROJECT SUBMISSION & DOSSIER
+           ==================================================================== -->
+      <section id="tab-submission" class="tab-content">
+        
+        <div class="lu-card lu-card-gold-border">
+          <div class="lu-card-header">
+            <h3 class="lu-card-title">
+              <span>&#127891;</span> Course Project Submission Hub
+            </h3>
+            <button class="lu-btn lu-btn-outline lu-btn-sm" onclick="promptStudentLogin()">Edit Student Credentials</button>
+          </div>
+          <p>
+            When your investigation is complete, this hub generates an official course project submission dossier containing your findings, query count, verification code, and forensic audit trail for Canvas grading.
+          </p>
+
+          <div id="submission-report-container" style="margin-top:20px;">
+            <div style="background:#13141B; border:1px solid var(--lu-border); padding:24px; border-radius:8px; text-align:center; color:var(--lu-text-muted);">
+              Solve the mystery to generate your official completion dossier.
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- Student Login Modal -->
+  <div id="student-login-modal" class="lu-modal-overlay" style="display:none;">
+    <div class="lu-modal">
+      <div class="lu-modal-header">
+        <h3><span>&#128100;</span> Student Detective Registration</h3>
+        <button onclick="closeStudentModal()" style="background:none; border:none; color:#888; font-size:1.4rem; cursor:pointer;">&times;</button>
+      </div>
+      <form class="lu-modal-body" onsubmit="submitStudentLogin(event)">
+        <p style="font-size:0.88rem; color:var(--lu-text-muted); margin-bottom:16px;">
+          Enter your credentials to link your investigative queries and project submission to your course record.
+        </p>
+        <div class="lu-form-group">
+          <label class="lu-label">Full Name *</label>
+          <input type="text" id="input-student-name" class="lu-input" placeholder="e.g. Jane Doe" required>
+        </div>
+        <div class="lu-form-group">
+          <label class="lu-label">Lindenwood Student ID</label>
+          <input type="text" id="input-student-id" class="lu-input" placeholder="e.g. A00123456">
+        </div>
+        <div class="lu-form-group">
+          <label class="lu-label">Lindenwood Email</label>
+          <input type="email" id="input-student-email" class="lu-input" placeholder="e.g. jdoe@lindenwood.edu">
+        </div>
+        <div class="lu-form-group">
+          <label class="lu-label">Course / Section</label>
+          <input type="text" id="input-student-course" class="lu-input" placeholder="e.g. DSCI 35600 / CSC 20100">
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+          <button type="button" class="lu-btn lu-btn-outline" onclick="closeStudentModal()">Cancel</button>
+          <button type="submit" class="lu-btn lu-btn-gold">Save &amp; Continue</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Collegiate Footer -->
+  <footer class="lu-footer">
+    <div class="lu-footer-content">
+      <div class="lu-footer-brand">
+        <h3>LINDENWOOD UNIVERSITY</h3>
+        <p style="line-height: 1.6; margin-bottom: 12px;">
+          College of Science, Technology, and Health &bull; Department of Computer Science.<br>
+          Forensic SQL Database Educational Mystery Project.
+        </p>
+        <p style="font-size: 0.85rem; color: var(--lu-gold-light);">
+          209 S Kingshighway St, St Charles, MO 63301 &bull; (636) 949-2000
+        </p>
+      </div>
+
+      <div>
+        <h4>Campus Links</h4>
+        <ul>
+          <li><a href="https://www.lindenwood.edu" target="_blank" rel="noopener">Lindenwood Home</a></li>
+          <li><a href="https://www.lindenwood.edu/academics/beyond-the-classroom/" target="_blank" rel="noopener">Experiential Learning</a></li>
+          <li><a href="https://selectstarsql.com/" target="_blank" rel="noopener">Select Star SQL Tutorial</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Project Attributions</h4>
+        <p style="font-size: 0.82rem; line-height: 1.5; color: var(--lu-text-muted);">
+          Inspired by the open-source SQL educational mystery model created by the Northwestern University Knight Lab.<br><br>
+          Tailored specifically for Lindenwood University students by Sagar Kalauni.
+        </p>
+      </div>
+    </div>
+
+    <div class="lu-footer-bottom">
+      <div>&copy; 2026 Lindenwood University. All rights reserved.</div>
+      <div>The Missing Golden Lion &bull; Forensic SQL Mystery</div>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,177 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 780" width="100%" height="100%">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1A1B22"/>
+      <stop offset="100%" stop-color="#282936"/>
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1100" height="780" fill="#0E0F14" rx="8"/>
+  <rect x="2" y="2" width="1096" height="776" fill="none" stroke="#B5A36A" stroke-width="1.5" stroke-opacity="0.3" rx="8"/>
+
+  <text x="550" y="38" font-family="'Segoe UI', Arial, sans-serif" font-size="20" font-weight="bold" fill="#B5A36A" text-anchor="middle" letter-spacing="1">
+    LINDENWOOD UNIVERSITY &bull; RELATIONAL DATABASE SCHEMA
+  </text>
+  <text x="550" y="58" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#9CA3AF" text-anchor="middle">
+    Forensic Schema &bull; Incident: October 18, 2025
+  </text>
+
+  <!-- Group 1: Core Person & Roles -->
+  <!-- TABLE: person -->
+  <g transform="translate(420, 80)" filter="url(#shadow)">
+    <rect width="260" height="150" rx="6" fill="#181922" stroke="#B5A36A" stroke-width="2"/>
+    <rect width="260" height="32" rx="6" fill="url(#headerGrad)"/>
+    <text x="130" y="22" font-family="Consolas, monospace" font-size="14" font-weight="bold" fill="#E5C07B" text-anchor="middle">person</text>
+    <text x="15" y="52" font-family="Consolas, monospace" font-size="12" fill="#F87171" font-weight="bold">id (PK)</text>
+    <text x="15" y="72" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">name</text>
+    <text x="15" y="92" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">email</text>
+    <text x="15" y="112" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">role (Student/Staff/Alum)</text>
+    <text x="15" y="132" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">phone, ssn</text>
+  </g>
+
+  <!-- TABLE: student -->
+  <g transform="translate(130, 80)" filter="url(#shadow)">
+    <rect width="250" height="150" rx="6" fill="#181922" stroke="#3A3B4C" stroke-width="1.5"/>
+    <rect width="250" height="32" rx="6" fill="url(#headerGrad)"/>
+    <text x="125" y="22" font-family="Consolas, monospace" font-size="14" font-weight="bold" fill="#B5A36A" text-anchor="middle">student</text>
+    <text x="15" y="52" font-family="Consolas, monospace" font-size="12" fill="#60A5FA">person_id (FK &rarr; person)</text>
+    <text x="15" y="72" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">student_id_code (A00...)</text>
+    <text x="15" y="92" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">major, class_year</text>
+    <text x="15" y="112" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">gpa</text>
+    <text x="15" y="132" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">dorm_building, dorm_room</text>
+  </g>
+
+  <!-- TABLE: alumni_donor -->
+  <g transform="translate(720, 80)" filter="url(#shadow)">
+    <rect width="250" height="130" rx="6" fill="#181922" stroke="#3A3B4C" stroke-width="1.5"/>
+    <rect width="250" height="32" rx="6" fill="url(#headerGrad)"/>
+    <text x="125" y="22" font-family="Consolas, monospace" font-size="14" font-weight="bold" fill="#B5A36A" text-anchor="middle">alumni_donor</text>
+    <text x="15" y="52" font-family="Consolas, monospace" font-size="12" fill="#60A5FA">person_id (FK &rarr; person)</text>
+    <text x="15" y="72" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">graduation_year</text>
+    <text x="15" y="92" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">profession</text>
+    <text x="15" y="112" font-family="Consolas, monospace" font-size="12" fill="#34D399" font-weight="bold">annual_income, total_donations</text>
+  </g>
+
+  <!-- Group 2: Organizations & Memberships -->
+  <!-- TABLE: organization -->
+  <g transform="translate(50, 270)" filter="url(#shadow)">
+    <rect width="240" height="110" rx="6" fill="#181922" stroke="#3A3B4C" stroke-width="1.5"/>
+    <rect width="240" height="32" rx="6" fill="url(#headerGrad)"/>
+    <text x="120" y="22" font-family="Consolas, monospace" font-size="14" font-weight="bold" fill="#B5A36A" text-anchor="middle">organization</text>
+    <text x="15" y="52" font-family="Consolas, monospace" font-size="12" fill="#F87171" font-weight="bold">id (PK)</text>
+    <text x="15" y="72" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">name (e.g. Robotics Club)</text>
+    <text x="15" y="92" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">category, meeting_building</text>
+  </g>
+
+  <!-- TABLE: organization_member -->
+  <g transform="translate(50, 420)" filter="url(#shadow)">
+    <rect width="240" height="110" rx="6" fill="#181922" stroke="#3A3B4C" stroke-width="1.5"/>
+    <rect width="240" height="32" rx="6" fill="url(#headerGrad)"/>
+    <text x="120" y="22" font-family="Consolas, monospace" font-size="14" font-weight="bold" fill="#B5A36A" text-anchor="middle">organization_member</text>
+    <text x="15" y="52" font-family="Consolas, monospace" font-size="12" fill="#60A5FA">org_id (FK &rarr; organization)</text>
+    <text x="15" y="72" font-family="Consolas, monospace" font-size="12" fill="#60A5FA">person_id (FK &rarr; person)</text>
+    <text x="15" y="92" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">role, joined_date</text>
+  </g>
+
+  <!-- Group 3: Vehicles & Parking -->
+  <!-- TABLE: vehicle -->
+  <g transform="translate(330, 270)" filter="url(#shadow)">
+    <rect width="230" height="150" rx="6" fill="#181922" stroke="#3A3B4C" stroke-width="1.5"/>
+    <rect width="230" height="32" rx="6" fill="url(#headerGrad)"/>
+    <text x="115" y="22" font-family="Consolas, monospace" font-size="14" font-weight="bold" fill="#B5A36A" text-anchor="middle">vehicle</text>
+    <text x="15" y="52" font-family="Consolas, monospace" font-size="12" fill="#F87171" font-weight="bold">id (PK)</text>
+    <text x="15" y="72" font-family="Consolas, monospace" font-size="12" fill="#60A5FA">person_id (FK &rarr; person)</text>
+    <text x="15" y="92" font-family="Consolas, monospace" font-size="12" fill="#FCD34D" font-weight="bold">license_plate</text>
+    <text x="15" y="112" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">car_make, car_model</text>
+    <text x="15" y="132" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">car_color, permit_type</text>
+  </g>
+
+  <!-- TABLE: parking_record -->
+  <g transform="translate(330, 460)" filter="url(#shadow)">
+    <rect width="230" height="130" rx="6" fill="#181922" stroke="#3A3B4C" stroke-width="1.5"/>
+    <rect width="230" height="32" rx="6" fill="url(#headerGrad)"/>
+    <text x="115" y="22" font-family="Consolas, monospace" font-size="14" font-weight="bold" fill="#B5A36A" text-anchor="middle">parking_record</text>
+    <text x="15" y="52" font-family="Consolas, monospace" font-size="12" fill="#F87171" font-weight="bold">id (PK)</text>
+    <text x="15" y="72" font-family="Consolas, monospace" font-size="12" fill="#60A5FA">vehicle_id (FK &rarr; vehicle)</text>
+    <text x="15" y="92" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">lot_name, entry_date</text>
+    <text x="15" y="112" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">entry_time, exit_time</text>
+  </g>
+
+  <!-- Group 4: Campus Access & Facilities -->
+  <!-- TABLE: card_swipe_access -->
+  <g transform="translate(600, 270)" filter="url(#shadow)">
+    <rect width="230" height="150" rx="6" fill="#181922" stroke="#3A3B4C" stroke-width="1.5"/>
+    <rect width="230" height="32" rx="6" fill="url(#headerGrad)"/>
+    <text x="115" y="22" font-family="Consolas, monospace" font-size="14" font-weight="bold" fill="#B5A36A" text-anchor="middle">card_swipe_access</text>
+    <text x="15" y="52" font-family="Consolas, monospace" font-size="12" fill="#F87171" font-weight="bold">id (PK)</text>
+    <text x="15" y="72" font-family="Consolas, monospace" font-size="12" fill="#60A5FA">person_id (FK &rarr; person)</text>
+    <text x="15" y="92" font-family="Consolas, monospace" font-size="12" fill="#60A5FA">building_id, room_id (FK)</text>
+    <text x="15" y="112" font-family="Consolas, monospace" font-size="12" fill="#FCD34D" font-weight="bold">swipe_date, swipe_time</text>
+    <text x="15" y="132" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">access_result</text>
+  </g>
+
+  <!-- TABLE: building & room -->
+  <g transform="translate(600, 460)" filter="url(#shadow)">
+    <rect width="230" height="130" rx="6" fill="#181922" stroke="#3A3B4C" stroke-width="1.5"/>
+    <rect width="230" height="32" rx="6" fill="url(#headerGrad)"/>
+    <text x="115" y="22" font-family="Consolas, monospace" font-size="14" font-weight="bold" fill="#B5A36A" text-anchor="middle">building / room</text>
+    <text x="15" y="52" font-family="Consolas, monospace" font-size="12" fill="#F87171" font-weight="bold">id (e.g. SPEL, ROEM)</text>
+    <text x="15" y="72" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">name, campus_zone</text>
+    <text x="15" y="92" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">room_number, room_type</text>
+    <text x="15" y="112" font-family="Consolas, monospace" font-size="12" fill="#60A5FA">room.building_id (FK)</text>
+  </g>
+
+  <!-- Group 5: Events, Reports, Interviews -->
+  <!-- TABLE: campus_event & event_attendance -->
+  <g transform="translate(860, 270)" filter="url(#shadow)">
+    <rect width="210" height="150" rx="6" fill="#181922" stroke="#3A3B4C" stroke-width="1.5"/>
+    <rect width="210" height="32" rx="6" fill="url(#headerGrad)"/>
+    <text x="105" y="22" font-family="Consolas, monospace" font-size="14" font-weight="bold" fill="#B5A36A" text-anchor="middle">campus_event</text>
+    <text x="15" y="52" font-family="Consolas, monospace" font-size="12" fill="#F87171" font-weight="bold">id (PK)</text>
+    <text x="15" y="72" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">event_name, event_date</text>
+    <text x="15" y="92" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">start_time, end_time</text>
+    <text x="15" y="112" font-family="Consolas, monospace" font-size="12" fill="#60A5FA">event_attendance (FK)</text>
+    <text x="15" y="132" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">check_in_time</text>
+  </g>
+
+  <!-- TABLE: security_report -->
+  <g transform="translate(50, 610)" filter="url(#shadow)">
+    <rect width="360" height="140" rx="6" fill="#181922" stroke="#B5A36A" stroke-width="2"/>
+    <rect width="360" height="32" rx="6" fill="url(#headerGrad)"/>
+    <text x="180" y="22" font-family="Consolas, monospace" font-size="14" font-weight="bold" fill="#E5C07B" text-anchor="middle">security_report (START HERE!)</text>
+    <text x="15" y="52" font-family="Consolas, monospace" font-size="12" fill="#F87171" font-weight="bold">id (PK)</text>
+    <text x="15" y="72" font-family="Consolas, monospace" font-size="12" fill="#FCD34D" font-weight="bold">date (20251018), time</text>
+    <text x="15" y="92" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">incident_type ('Theft of Golden Lion...')</text>
+    <text x="15" y="112" font-family="Consolas, monospace" font-size="12" fill="#60A5FA">building_id ('SPEL')</text>
+    <text x="15" y="132" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">description (Contains key witness names)</text>
+  </g>
+
+  <!-- TABLE: interview -->
+  <g transform="translate(450, 610)" filter="url(#shadow)">
+    <rect width="320" height="140" rx="6" fill="#181922" stroke="#B5A36A" stroke-width="2"/>
+    <rect width="320" height="32" rx="6" fill="url(#headerGrad)"/>
+    <text x="160" y="22" font-family="Consolas, monospace" font-size="14" font-weight="bold" fill="#E5C07B" text-anchor="middle">interview (READ WITNESSES!)</text>
+    <text x="15" y="52" font-family="Consolas, monospace" font-size="12" fill="#60A5FA" font-weight="bold">person_id (FK &rarr; person.id)</text>
+    <text x="15" y="72" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">interview_date</text>
+    <text x="15" y="92" font-family="Consolas, monospace" font-size="12" fill="#34D399" font-weight="bold">transcript (Witness statements,</text>
+    <text x="15" y="112" font-family="Consolas, monospace" font-size="12" fill="#34D399" font-weight="bold">car descriptions, club emblems,</text>
+    <text x="15" y="132" font-family="Consolas, monospace" font-size="12" fill="#34D399" font-weight="bold">and suspect confession!)</text>
+  </g>
+
+  <!-- TABLE: solution -->
+  <g transform="translate(800, 610)" filter="url(#shadow)">
+    <rect width="270" height="140" rx="6" fill="#181922" stroke="#10B981" stroke-width="2"/>
+    <rect width="270" height="32" rx="6" fill="url(#headerGrad)"/>
+    <text x="135" y="22" font-family="Consolas, monospace" font-size="14" font-weight="bold" fill="#34D399" text-anchor="middle">solution (VERIFICATION)</text>
+    <text x="15" y="52" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">user (INTEGER, use 1)</text>
+    <text x="15" y="72" font-family="Consolas, monospace" font-size="12" fill="#E5E7EB">value (Suspect Name)</text>
+    <text x="15" y="100" font-family="Consolas, monospace" font-size="11" fill="#9CA3AF">Trigger evaluates suspect:</text>
+    <text x="15" y="118" font-family="Consolas, monospace" font-size="11" fill="#FCD34D">&bull; Stage 1: Returns confession</text>
+    <text x="15" y="132" font-family="Consolas, monospace" font-size="11" fill="#34D399">&bull; Stage 2: Confirms mastermind!</text>
+  </g>
+
+</svg>

@@ -1,0 +1,739 @@
+/* ==========================================================================
+   Lindenwood University - The Missing Golden Lion SQL Mystery
+   Theme: Lindenwood Gold & Noir Detective Forensic Style
+   ========================================================================== */
+
+:root {
+  --lu-gold: #B5A36A;
+  --lu-gold-dark: #857542;
+  --lu-gold-light: #d6c694;
+  --lu-gold-glow: rgba(181, 163, 106, 0.4);
+  --lu-black: #0B0C10;
+  --lu-black-pure: #000000;
+  --lu-surface: #121318;
+  --lu-card: #1A1B22;
+  --lu-card-hover: #22232D;
+  --lu-border: #2C2D38;
+  --lu-border-gold: rgba(181, 163, 106, 0.35);
+  --lu-text: #E5E7EB;
+  --lu-text-muted: #9CA3AF;
+  --lu-text-bright: #FFFFFF;
+  --lu-success: #10B981;
+  --lu-danger: #EF4444;
+  --lu-font: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  --lu-font-mono: 'Consolas', 'Courier New', Monaco, monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--lu-font);
+  background-color: var(--lu-surface);
+  color: var(--lu-text);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   University Top Bar
+   ========================================================================== */
+.lu-topbar {
+  background: var(--lu-black-pure);
+  border-bottom: 3px solid var(--lu-gold);
+  color: var(--lu-gold);
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  font-weight: 600;
+  padding: 8px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.lu-student-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(181, 163, 106, 0.15);
+  border: 1px solid var(--lu-gold);
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: var(--lu-gold-light);
+}
+
+.lu-student-badge button {
+  background: none;
+  border: none;
+  color: var(--lu-gold);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.8rem;
+  margin-left: 6px;
+}
+
+.lu-db-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--lu-border);
+}
+
+.lu-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #F59E0B;
+}
+
+.lu-status-dot.ready {
+  background: #10B981;
+  box-shadow: 0 0 8px #10B981;
+}
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
+.lu-header {
+  background: linear-gradient(180deg, #0e0f14 0%, #171820 100%);
+  border-bottom: 1px solid var(--lu-border);
+  padding: 24px;
+  position: relative;
+}
+
+.lu-header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.lu-brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.lu-logo-svg {
+  width: 54px;
+  height: 54px;
+  filter: drop-shadow(0 2px 8px var(--lu-gold-glow));
+}
+
+.lu-brand-text h1 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--lu-text-bright);
+  line-height: 1.2;
+}
+
+.lu-brand-text h1 span {
+  color: var(--lu-gold);
+}
+
+.lu-brand-text p {
+  font-size: 0.85rem;
+  color: var(--lu-gold-light);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+/* Buttons */
+.lu-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  border: none;
+  font-family: var(--lu-font);
+}
+
+.lu-btn-gold {
+  background: linear-gradient(135deg, var(--lu-gold) 0%, var(--lu-gold-dark) 100%);
+  color: var(--lu-black-pure);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.lu-btn-gold:hover {
+  background: linear-gradient(135deg, var(--lu-gold-light) 0%, var(--lu-gold) 100%);
+  box-shadow: 0 4px 14px var(--lu-gold-glow);
+  transform: translateY(-1px);
+}
+
+.lu-btn-outline {
+  background: transparent;
+  color: var(--lu-gold);
+  border: 1px solid var(--lu-gold);
+}
+
+.lu-btn-outline:hover {
+  background: rgba(181, 163, 106, 0.12);
+  color: var(--lu-text-bright);
+}
+
+.lu-btn-lg {
+  padding: 14px 32px;
+  font-size: 1.15rem;
+  letter-spacing: 1px;
+}
+
+.lu-btn-sm {
+  padding: 4px 10px;
+  font-size: 0.8rem;
+}
+
+/* ==========================================================================
+   Hero Intro Poster (Landing Mode)
+   ========================================================================== */
+.lu-poster-hero {
+  background: radial-gradient(circle at center, #1E1F29 0%, #0E0F14 100%);
+  border: 2px solid var(--lu-gold);
+  border-radius: 12px;
+  padding: 48px 24px;
+  text-align: center;
+  margin: 32px auto;
+  max-width: 800px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7), 0 0 30px var(--lu-gold-glow);
+  position: relative;
+  overflow: hidden;
+}
+
+.lu-poster-tag {
+  color: var(--lu-gold);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.lu-poster-title {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: var(--lu-text-bright);
+  line-height: 1.15;
+  margin-bottom: 14px;
+}
+
+.lu-poster-title span {
+  color: var(--lu-gold);
+}
+
+.lu-poster-desc {
+  font-size: 1.15rem;
+  color: var(--lu-text-muted);
+  max-width: 580px;
+  margin: 0 auto 28px;
+  line-height: 1.7;
+}
+
+/* ==========================================================================
+   Navigation Tabs
+   ========================================================================== */
+.lu-nav-tabs {
+  background: #0E0F14;
+  border-bottom: 1px solid var(--lu-border);
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.lu-tabs-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+}
+
+.lu-tab {
+  padding: 14px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--lu-text-muted);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lu-tab:hover {
+  color: var(--lu-gold-light);
+}
+
+.lu-tab.active {
+  color: var(--lu-gold);
+  border-bottom-color: var(--lu-gold);
+  background: rgba(181, 163, 106, 0.06);
+}
+
+/* ==========================================================================
+   Main & Cards
+   ========================================================================== */
+.lu-main {
+  max-width: 1200px;
+  width: 100%;
+  margin: 24px auto;
+  padding: 0 20px;
+  flex: 1;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+  animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.lu-card {
+  background: var(--lu-card);
+  border: 1px solid var(--lu-border);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.lu-card-gold-border {
+  border-left: 4px solid var(--lu-gold);
+}
+
+.lu-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--lu-border);
+}
+
+.lu-card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--lu-text-bright);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ==========================================================================
+   SQL Editor & Workbench
+   ========================================================================== */
+.lu-editor-box {
+  border: 1px solid var(--lu-border-gold);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  background: #0E0F13;
+}
+
+.lu-editor-toolbar {
+  background: #171821;
+  border-bottom: 1px solid var(--lu-border);
+  padding: 10px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.lu-editor-toolbar-title {
+  font-size: 0.85rem;
+  color: var(--lu-gold);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.lu-quick-queries {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.lu-chip {
+  background: #232530;
+  color: var(--lu-text);
+  border: 1px solid var(--lu-border);
+  border-radius: 4px;
+  padding: 5px 12px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.lu-chip:hover {
+  background: rgba(181, 163, 106, 0.2);
+  border-color: var(--lu-gold);
+  color: var(--lu-gold-light);
+}
+
+/* CodeMirror customizations */
+.CodeMirror {
+  font-family: var(--lu-font-mono) !important;
+  font-size: 14px !important;
+  height: auto !important;
+  min-height: 120px;
+  background: #0D0E12 !important;
+  color: #F3F4F6 !important;
+}
+
+.CodeMirror-gutters {
+  background: #14151B !important;
+  border-right: 1px solid var(--lu-border) !important;
+}
+
+.CodeMirror-linenumber {
+  color: #6B7280 !important;
+}
+
+.cm-keyword { color: #E5C07B !important; font-weight: bold !important; }
+.cm-string { color: #98C379 !important; }
+.cm-number { color: #D19A66 !important; }
+.cm-comment { color: #6B7280 !important; font-style: italic; }
+
+/* Data Tables */
+.lu-results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #171821;
+  border-bottom: 1px solid var(--lu-border);
+  font-size: 0.85rem;
+  color: var(--lu-text-muted);
+}
+
+.lu-results-container {
+  max-height: 520px;
+  overflow: auto;
+  background: #0E0F14;
+  border-radius: 6px;
+  border: 1px solid var(--lu-border);
+}
+
+table.datatable {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--lu-font-mono);
+  font-size: 0.88rem;
+}
+
+table.datatable th {
+  background: #181922;
+  color: var(--lu-gold);
+  font-weight: 700;
+  padding: 10px 14px;
+  border-bottom: 2px solid var(--lu-gold-dark);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  white-space: nowrap;
+}
+
+table.datatable td {
+  padding: 8px 14px;
+  border-bottom: 1px solid #232530;
+  color: var(--lu-text);
+  white-space: nowrap;
+}
+
+table.datatable tr:hover {
+  background: rgba(181, 163, 106, 0.08);
+}
+
+.returnOkay {
+  color: var(--lu-text-bright);
+}
+
+.returnError {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid var(--lu-danger);
+  color: #FCA5A5;
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-family: var(--lu-font-mono);
+  font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   Schema Grid
+   ========================================================================== */
+.lu-schema-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.lu-table-card {
+  background: #14151B;
+  border: 1px solid var(--lu-border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.lu-table-card:hover {
+  border-color: var(--lu-gold);
+}
+
+.lu-table-card-head {
+  background: #1C1D26;
+  border-bottom: 1px solid var(--lu-border);
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lu-table-name {
+  font-family: var(--lu-font-mono);
+  font-weight: 700;
+  color: var(--lu-gold);
+}
+
+.lu-column-list {
+  padding: 8px 14px;
+  list-style: none;
+  font-family: var(--lu-font-mono);
+  font-size: 0.85rem;
+}
+
+.lu-column-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+}
+
+.lu-column-item:hover {
+  color: var(--lu-gold-light);
+}
+
+.lu-col-type { color: var(--lu-text-muted); font-size: 0.78rem; }
+.lu-col-pk { color: #F59E0B; font-size: 0.75rem; font-weight: bold; }
+
+/* ==========================================================================
+   Solution Box & Secret Mastermind Revelation
+   ========================================================================== */
+.lu-solution-box {
+  background: linear-gradient(180deg, #181922 0%, #111218 100%);
+  border: 2px solid var(--lu-gold);
+  border-radius: 8px;
+  padding: 24px;
+  margin: 20px 0;
+  text-align: center;
+}
+
+.lu-solution-input-group {
+  display: flex;
+  max-width: 520px;
+  margin: 16px auto;
+  gap: 8px;
+}
+
+.lu-solution-input {
+  flex: 1;
+  background: #0E0F14;
+  border: 1px solid var(--lu-border-gold);
+  border-radius: 6px;
+  padding: 10px 16px;
+  color: var(--lu-text-bright);
+  font-size: 1rem;
+}
+
+.lu-solution-input:focus {
+  outline: none;
+  border-color: var(--lu-gold);
+  box-shadow: 0 0 10px var(--lu-gold-glow);
+}
+
+.lu-solution-verdict {
+  margin-top: 16px;
+  padding: 16px 22px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  display: none;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.lu-solution-verdict.correct {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid var(--lu-success);
+  color: #34D399;
+}
+
+.lu-solution-verdict.mastermind {
+  background: rgba(181, 163, 106, 0.25);
+  border: 2px solid var(--lu-gold);
+  color: #FDE68A;
+  box-shadow: 0 0 25px var(--lu-gold-glow);
+}
+
+.lu-solution-verdict.incorrect {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid var(--lu-danger);
+  color: #F87171;
+  text-align: center;
+}
+
+/* ==========================================================================
+   Student Modal & Certificate
+   ========================================================================== */
+.lu-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(4px);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 9999; padding: 16px;
+}
+
+.lu-modal {
+  background: #171821;
+  border: 2px solid var(--lu-gold);
+  border-radius: 10px;
+  width: 100%; max-width: 520px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 20px var(--lu-gold-glow);
+  overflow: hidden;
+}
+
+.lu-modal-header {
+  background: #0E0F14;
+  border-bottom: 1px solid var(--lu-border);
+  padding: 18px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.lu-modal-header h3 { color: var(--lu-gold); font-size: 1.25rem; }
+.lu-modal-body { padding: 24px; }
+.lu-form-group { margin-bottom: 16px; }
+
+.lu-label {
+  display: block; font-size: 0.85rem; font-weight: 600;
+  color: var(--lu-text-muted); margin-bottom: 6px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+.lu-input {
+  width: 100%; background: #0D0E13;
+  border: 1px solid var(--lu-border-gold);
+  border-radius: 6px; padding: 10px 14px;
+  color: var(--lu-text-bright); font-size: 0.95rem;
+}
+
+.lu-certificate {
+  background: #FFFFFF;
+  color: #111111;
+  padding: 32px;
+  border-radius: 8px;
+  border: 4px double var(--lu-gold-dark);
+  margin-top: 24px;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.lu-cert-header {
+  text-align: center; border-bottom: 2px solid #857542;
+  padding-bottom: 16px; margin-bottom: 20px;
+}
+
+.lu-cert-header h2 { font-size: 1.6rem; color: #111; }
+.lu-cert-header p { font-size: 0.9rem; color: #857542; font-weight: bold; }
+
+.lu-cert-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; margin-bottom: 20px; font-family: var(--lu-font);
+}
+
+.lu-cert-label { font-weight: bold; color: #444; }
+.lu-cert-val { color: #000; }
+
+.lu-cert-status {
+  background: #F3F4F6; border: 1px solid #D1D5DB;
+  padding: 12px; border-radius: 6px; margin-bottom: 20px;
+  font-family: var(--lu-font);
+}
+
+.lu-cert-hash {
+  font-family: var(--lu-font-mono); font-size: 0.8rem;
+  color: #6B7280; word-break: break-all;
+}
+
+/* Footer */
+.lu-footer {
+  background: var(--lu-black-pure);
+  border-top: 3px solid var(--lu-gold);
+  padding: 32px 24px 20px;
+  margin-top: auto;
+  color: var(--lu-text-muted);
+  font-size: 0.9rem;
+}
+
+.lu-footer-content {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 2fr 1fr 1fr;
+  gap: 32px; margin-bottom: 24px;
+}
+
+.lu-footer-brand h3 { color: var(--lu-gold); font-size: 1.1rem; margin-bottom: 8px; }
+.lu-footer a { color: var(--lu-gold-light); text-decoration: none; }
+.lu-footer a:hover { color: var(--lu-text-bright); text-decoration: underline; }
+
+.lu-footer-bottom {
+  max-width: 1200px; margin: 0 auto;
+  padding-top: 16px; border-top: 1px solid var(--lu-border);
+  display: flex; justify-content: space-between; flex-wrap: wrap;
+  gap: 12px; font-size: 0.8rem;
+}
+
+@media print {
+  body * { visibility: hidden; }
+  .lu-certificate, .lu-certificate * { visibility: visible; }
+  .lu-certificate { position: absolute; left: 0; top: 0; width: 100%; border: none; }
+}
+
+@media (max-width: 768px) {
+  .lu-poster-title { font-size: 2.1rem; }
+  .lu-footer-content { grid-template-columns: 1fr; }
+  .lu-solution-input-group { flex-direction: column; }
+}
