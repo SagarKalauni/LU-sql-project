@@ -26,7 +26,7 @@ let studentSession = { ...DEFAULT_SESSION };
 
 function loadStudentSession() {
   try {
-    const raw = localStorage.getItem('lu_golden_lion_session');
+    const raw = localStorage.getItem('lu_golden_lion_investigation_v4');
     if (raw) {
       studentSession = { ...DEFAULT_SESSION, ...JSON.parse(raw) };
     }
@@ -38,7 +38,7 @@ function loadStudentSession() {
 
 function saveStudentSession() {
   try {
-    localStorage.setItem('lu_golden_lion_session', JSON.stringify(studentSession));
+    localStorage.setItem('lu_golden_lion_investigation_v4', JSON.stringify(studentSession));
   } catch (e) {
     console.warn('Could not save session to localStorage', e);
   }
@@ -378,7 +378,8 @@ function checkSolutionQuick(name) {
   const resultDiv = document.getElementById('quick-solution-result');
   if (resultDiv) {
     resultDiv.style.display = 'block';
-    resultDiv.innerHTML = '<div style="color:var(--lu-gold);">Checking with campus security...</div>';
+    resultDiv.className = 'lu-solution-verdict';
+    resultDiv.innerHTML = '<div style="color:var(--lu-gold);">Checking suspect with campus security...</div>';
   }
 
   executeSQL(
@@ -386,17 +387,32 @@ function checkSolutionQuick(name) {
     results => {
       if (resultDiv && results && results.length > 0 && results[0].values.length > 0) {
         const msg = String(results[0].values[0][0]);
-        resultDiv.innerHTML = msg.replace(/\n/g, '<br>');
         if (msg.includes('caught who took') || msg.includes('found who took') || clean.toLowerCase() === 'jeremy bowers') {
           resultDiv.className = 'lu-solution-verdict correct';
-          handleSolutionResult(msg, sql);
-          const sInput = document.getElementById('quick-suspect-input');
-          if (sInput) sInput.disabled = true;
+          resultDiv.innerHTML = msg.replace(/\n/g, '<br>');
+
+          studentSession.thiefSolved = true;
+          studentSession.thiefName = clean;
+          saveStudentSession();
+          renderSubmissionReport();
+
+          // Reveal the empty Mastermind box
+          const mBox = document.getElementById('mastermind-solution-box');
+          if (mBox) {
+            mBox.style.display = 'block';
+            const mInput = document.getElementById('quick-mastermind-input');
+            if (mInput) mInput.value = '';
+            setTimeout(() => {
+              mBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 250);
+          }
         } else if (msg.includes('champagne') || msg.includes('brains') || msg.includes('Incredible forensic detective work')) {
           resultDiv.className = 'lu-solution-verdict mastermind';
+          resultDiv.innerHTML = msg.replace(/\n/g, '<br>');
           handleSolutionResult(msg, sql);
         } else {
           resultDiv.className = 'lu-solution-verdict incorrect';
+          resultDiv.innerHTML = "<strong>&#10060; Incorrect Suspect.</strong> That is not who took the trophy. Review the incident report, interview witness statements, and check the records again!";
         }
       }
     },
@@ -419,6 +435,7 @@ function checkMastermindQuick(name) {
   const resultDiv = document.getElementById('quick-mastermind-result');
   if (resultDiv) {
     resultDiv.style.display = 'block';
+    resultDiv.className = 'lu-solution-verdict';
     resultDiv.innerHTML = '<div style="color:var(--lu-gold);">Verifying mastermind with campus security...</div>';
   }
 
@@ -430,12 +447,14 @@ function checkMastermindQuick(name) {
         if (msg.includes('champagne') || msg.includes('brains') || msg.includes('Incredible forensic detective work') || clean.toLowerCase() === 'miranda priestly') {
           resultDiv.className = 'lu-solution-verdict mastermind';
           resultDiv.innerHTML = msg.replace(/\n/g, '<br>');
-          handleSolutionResult(msg, sql);
-          const mInput = document.getElementById('quick-mastermind-input');
-          if (mInput) mInput.disabled = true;
+
+          studentSession.mastermindSolved = true;
+          studentSession.mastermindName = clean;
+          saveStudentSession();
+          renderSubmissionReport();
         } else {
           resultDiv.className = 'lu-solution-verdict incorrect';
-          resultDiv.innerHTML = "Incorrect mastermind! Query Jeremy Bowers' interview transcript in the <code>interview</code> table. Find mastermind and also verify she is the one.";
+          resultDiv.innerHTML = "<strong>&#10060; Incorrect Mastermind.</strong> That is not who orchestrated the theft. Query the culprit's interview transcript in the <code>interview</code> table. Find mastermind and also verify she is the one.";
         }
       }
     },
@@ -451,35 +470,66 @@ function checkMastermindQuick(name) {
 function updateMastermindUI() {
   const mBox = document.getElementById('mastermind-solution-box');
   if (!mBox) return;
-  if (studentSession.thiefSolved) {
+
+  // Only show mastermind box if culprit was actually solved
+  if (studentSession.thiefSolved && studentSession.thiefName) {
     mBox.style.display = 'block';
-    const sInput = document.getElementById('quick-suspect-input');
-    if (sInput) {
-      sInput.value = studentSession.thiefName;
-      sInput.disabled = true;
-    }
+
     const sResult = document.getElementById('quick-solution-result');
     if (sResult && !sResult.innerHTML) {
       sResult.style.display = 'block';
       sResult.className = 'lu-solution-verdict correct';
-      sResult.innerHTML = `<strong>&#9989; Trophy Culprit Caught:</strong> ${escapeHtml(studentSession.thiefName)} confessed he was hired by a mastermind!`;
+      sResult.innerHTML = `<strong>&#9989; Trophy Culprit Solved:</strong> ${escapeHtml(studentSession.thiefName)}.<br>The culprit confessed he was hired by an influential mastermind!`;
     }
 
-    if (studentSession.mastermindSolved) {
+    if (studentSession.mastermindSolved && studentSession.mastermindName) {
       const mResult = document.getElementById('quick-mastermind-result');
-      if (mResult) {
+      if (mResult && !mResult.innerHTML) {
         mResult.style.display = 'block';
         mResult.className = 'lu-solution-verdict mastermind';
-        mResult.innerHTML = `<strong>&#127942; Mastermind Exposed:</strong> ${escapeHtml(studentSession.mastermindName)}<br>Case closed! The Golden Lion trophy is secured!`;
-      }
-      const mInput = document.getElementById('quick-mastermind-input');
-      if (mInput) {
-        mInput.value = studentSession.mastermindName;
-        mInput.disabled = true;
+        mResult.innerHTML = `<strong>&#127942; Mastermind Solved:</strong> ${escapeHtml(studentSession.mastermindName)}.<br>Case closed! The Golden Lion trophy is secured!`;
       }
     }
   } else {
     mBox.style.display = 'none';
+    const mResult = document.getElementById('quick-mastermind-result');
+    if (mResult) {
+      mResult.style.display = 'none';
+      mResult.innerHTML = '';
+    }
+  }
+}
+
+function resetInvestigation() {
+  if (confirm('Start a fresh investigation? This will reset all suspect entries, verification boxes, and your project dossier.')) {
+    studentSession = {
+      ...DEFAULT_SESSION,
+      name: studentSession.name,
+      studentId: studentSession.studentId,
+      email: studentSession.email,
+      course: studentSession.course,
+      loginTime: new Date().toISOString()
+    };
+    try {
+      localStorage.removeItem('lu_golden_lion_investigation_v4');
+      localStorage.removeItem('lu_golden_lion_session');
+    } catch (e) {}
+
+    const sInput = document.getElementById('quick-suspect-input');
+    if (sInput) { sInput.value = ''; sInput.disabled = false; }
+    const sResult = document.getElementById('quick-solution-result');
+    if (sResult) { sResult.style.display = 'none'; sResult.innerHTML = ''; sResult.className = 'lu-solution-verdict'; }
+
+    const mBox = document.getElementById('mastermind-solution-box');
+    if (mBox) mBox.style.display = 'none';
+    const mInput = document.getElementById('quick-mastermind-input');
+    if (mInput) { mInput.value = ''; mInput.disabled = false; }
+    const mResult = document.getElementById('quick-mastermind-result');
+    if (mResult) { mResult.style.display = 'none'; mResult.innerHTML = ''; mResult.className = 'lu-solution-verdict'; }
+
+    saveStudentSession();
+    renderSubmissionReport();
+    alert('Case reset. Both suspect and mastermind verification boxes are empty and ready!');
   }
 }
 
@@ -489,11 +539,11 @@ function renderSubmissionReport() {
 
   const hash = generateVerificationCode();
 
-  const culpritStatusHtml = studentSession.thiefSolved 
+  const culpritStatusHtml = (studentSession.thiefSolved && studentSession.thiefName) 
     ? `<span style="color:#10B981; font-weight:bold;">&#9989; Solved &mdash; ${escapeHtml(studentSession.thiefName)}</span>`
     : `<span style="color:#DC2626; font-weight:bold;">&#10060; Unsolved</span>`;
 
-  const mastermindStatusHtml = studentSession.mastermindSolved 
+  const mastermindStatusHtml = (studentSession.mastermindSolved && studentSession.mastermindName) 
     ? `<span style="color:#B5A36A; font-weight:bold;">&#9989; Solved &mdash; ${escapeHtml(studentSession.mastermindName)}</span>`
     : `<span style="color:#DC2626; font-weight:bold;">&#10060; Unsolved</span>`;
 
@@ -523,10 +573,11 @@ function renderSubmissionReport() {
         <div class="lu-cert-hash">${hash}</div>
       </div>
 
-      <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;" class="no-print">
+      <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:20px;" class="no-print">
         <button class="lu-btn lu-btn-gold" onclick="window.print()">Print / Save PDF Report</button>
         <button class="lu-btn lu-btn-outline" onclick="downloadSubmissionJSON()">Download Submission JSON</button>
         <button class="lu-btn lu-btn-outline" onclick="copyCanvasSubmission()">Copy Text for Canvas</button>
+        <button class="lu-btn lu-btn-outline" onclick="resetInvestigation()" style="color:#F87171; border-color:#EF4444;">&#8634; Reset Case</button>
       </div>
     </div>
   `;

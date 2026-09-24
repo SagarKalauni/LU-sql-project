@@ -57,6 +57,9 @@
         <button class="lu-btn lu-btn-outline" onclick="promptStudentLogin()">
           <span>&#128100;</span> Student Login
         </button>
+        <button class="lu-btn lu-btn-outline" onclick="resetInvestigation()" title="Reset investigation to start fresh">
+          <span>&#8634;</span> Reset Case
+        </button>
         <button class="lu-btn lu-btn-gold" onclick="document.getElementById('submission-section').scrollIntoView({behavior:'smooth'})">
           <span>&#128221;</span> Jump to Submission
         </button>
@@ -198,13 +201,13 @@ SELECT value FROM solution;">
       <!-- Quick Interactive Suspect Input -->
       <div class="lu-solution-box" style="margin-top: 20px;">
         <h4 style="color: var(--lu-gold); margin-bottom: 6px; font-size: 1.15rem;">
-          Quick Suspect Verification
+          Suspect Verification
         </h4>
         <p style="font-size: 0.9rem; color: var(--lu-text-muted); margin-bottom: 14px;">
-          Or type the suspect's full name directly (e.g. <code>First Last</code>):
+          Type the full name of the person who took the Golden Lion Trophy:
         </p>
         <div class="lu-solution-input-group">
-          <input type="text" id="quick-suspect-input" class="lu-solution-input" placeholder="e.g. First Last" onkeydown="if(event.key==='Enter') checkSolutionQuick(this.value)">
+          <input type="text" id="quick-suspect-input" class="lu-solution-input" placeholder="Enter suspect name..." onkeydown="if(event.key==='Enter') checkSolutionQuick(this.value)">
           <button class="lu-btn lu-btn-gold" onclick="checkSolutionQuick(document.getElementById('quick-suspect-input').value)">
             Verify Suspect
           </button>
@@ -212,7 +215,7 @@ SELECT value FROM solution;">
         <div id="quick-solution-result" class="lu-solution-verdict"></div>
       </div>
 
-      <!-- Quick Interactive Mastermind Input (Revealed after suspect is verified) -->
+      <!-- Quick Interactive Mastermind Input (Revealed ONLY after suspect is verified) -->
       <div id="mastermind-solution-box" class="lu-solution-box" style="display: none; margin-top: 24px; border: 2px solid var(--lu-gold); background: linear-gradient(180deg, #181920 0%, #0F1015 100%);">
         <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:6px;">
           <span style="font-size:1.4rem;">👑</span>
@@ -221,10 +224,10 @@ SELECT value FROM solution;">
           </h4>
         </div>
         <p style="font-size: 0.92rem; color: var(--lu-text); max-width: 620px; margin: 0 auto 14px; line-height:1.6;">
-          The trophy thief has confessed, but who hired him? Query Jeremy Bowers' interview transcript in the <code>interview</code> table. Find mastermind and also verify she is the one:
+          The trophy thief has confessed, but who hired them? Query the culprit's interview transcript in the <code>interview</code> table. Find mastermind and also verify she is the one:
         </p>
         <div class="lu-solution-input-group">
-          <input type="text" id="quick-mastermind-input" class="lu-solution-input" placeholder="e.g. Mastermind Name" onkeydown="if(event.key==='Enter') checkMastermindQuick(this.value)">
+          <input type="text" id="quick-mastermind-input" class="lu-solution-input" placeholder="Enter mastermind name..." onkeydown="if(event.key==='Enter') checkMastermindQuick(this.value)">
           <button class="lu-btn lu-btn-gold" onclick="checkMastermindQuick(document.getElementById('quick-mastermind-input').value)">
             Verify Mastermind
           </button>
