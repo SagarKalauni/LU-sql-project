@@ -726,6 +726,95 @@ table.datatable tr:hover {
   gap: 12px; font-size: 0.8rem;
 }
 
+/* ==========================================================================
+   Knight Lab Style SQL Exercise Component (.sqlExHomeDiv)
+   ========================================================================== */
+.sqlExHomeDiv {
+  background: #111218;
+  border: 1px solid var(--lu-border-gold);
+  border-radius: 8px;
+  margin: 18px 0 24px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.sqlExQuestion {
+  font-family: var(--lu-font);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--lu-gold);
+  background: #171822;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--lu-border);
+}
+
+.sqlExComment {
+  font-family: var(--lu-font);
+  font-size: 0.88rem;
+  color: var(--lu-text-muted);
+  background: #13141C;
+  padding: 8px 18px;
+  border-bottom: 1px solid var(--lu-border);
+}
+
+.sqlExInputArea {
+  position: relative;
+  background: #0D0E13;
+}
+
+.sqlExInputArea .CodeMirror {
+  min-height: 90px;
+  font-size: 14px;
+  padding: 4px 0;
+}
+
+.sqlExInputArea input[type="submit"],
+.sqlExInputArea input[type="button"] {
+  margin: 10px 8px 12px;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sqlExInputArea input[type="submit"].sql-exercise-submit {
+  background: var(--lu-gold);
+  color: var(--lu-black-pure);
+  border: 1px solid var(--lu-gold);
+}
+
+.sqlExInputArea input[type="submit"].sql-exercise-submit:hover:not(:disabled) {
+  background: #E5C07B;
+  box-shadow: 0 0 12px var(--lu-gold-glow);
+}
+
+.sqlExInputArea input[type="submit"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sqlExInputArea input[type="button"] {
+  background: transparent;
+  color: var(--lu-text-muted);
+  border: 1px solid var(--lu-border);
+}
+
+.sqlExInputArea input[type="button"]:hover {
+  border-color: var(--lu-gold);
+  color: var(--lu-gold-light);
+}
+
+.sqlExOutputArea {
+  background: #08090C;
+  border-top: 1px solid var(--lu-border);
+  padding: 12px 16px;
+  min-height: 40px;
+  max-height: 480px;
+  overflow: auto;
+}
+
 @media print {
   body * { visibility: hidden; }
   .lu-certificate, .lu-certificate * { visibility: visible; }

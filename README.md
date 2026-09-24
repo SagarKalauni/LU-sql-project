@@ -1,10 +1,11 @@
 # 🦁 The Lindenwood SQL Mystery: The Missing Golden Lion
 
-An authentic, immersive forensic database mystery designed specifically for **Lindenwood University** students, revolving completely around the Lindenwood campus in St. Charles, Missouri.
+An authentic, immersive forensic database mystery designed specifically for **Lindenwood University** students, revolving around the campus in St. Charles, Missouri.
 
 ---
 
 ## 🔍 The Story
+
 A revered university trophy has gone missing, and campus security needs your forensic SQL skills:
 
 > **The Golden Lion Trophy** was last seen at Lindenwood University on **October 18, 2025**. The trophy disappeared sometime during the evening from the Spellmann Campus Center, but security does not know exactly when or who took it.
@@ -12,50 +13,57 @@ A revered university trophy has gone missing, and campus security needs your for
 > Unfortunately, the original incident report has been misplaced.
 >
 > You remember only three things:
-> - **Date**: October 18, 2025 (`20251018`)
-> - **Location**: Lindenwood University
-> - **Incident**: Missing Golden Lion Trophy
+> - **Incident**: Theft of the Golden Lion Trophy (`type = 'theft'`)
+> - **Date**: October 18, 2025 (`date = 20251018`)
+> - **Location**: Lindenwood University (`city = 'Lindenwood'`)
 
-Your mission: Start by querying the university security database for the incident report, follow the clues across card swipes, student organizations, vehicles, and interviews, and find out who took the Golden Lion!
-
----
-
-## 🏛️ Campus Database Schema (14 Tables)
-The mystery runs on a complete relational SQLite database (`lindenwood-mystery.db`):
-- `person` (students, faculty, alumni, staff)
-- `student` (majors, class years, GPAs, dorms)
-- `faculty_staff` (academic departments, titles, offices)
-- `alumni_donor` (graduation year, profession, income, donations)
-- `building` (Spellmann, Roemer, Harmon, Evans Commons, Scheidegger, LARC, etc.)
-- `room` (labs, offices, lounges, gala halls)
-- `organization` (Robotics Club, Cyber Forensics, SGA, etc.)
-- `organization_member` (roles, join dates)
-- `vehicle` (makes, models, colors, license plates, permit types)
-- `parking_record` (lots, entry and exit times)
-- `card_swipe_access` (badge scans at building/room doors with timestamps)
-- `campus_event` (events, times, locations)
-- `event_attendance` (check-in records)
-- `security_report` (incident logs and security reports)
-- `interview` (witness and suspect interview transcripts)
-- `solution` (automated validation trigger)
+Your mission: Retrieve the incident report from the campus security database, follow the clues across witness interviews, gym memberships, car license plates, and event check-ins, and find out who took the Golden Lion!
 
 ---
 
-## 🕵️‍♂️ Investigation Progression (Hidden Two-Stage Mystery)
+## 🏛️ Database Relational Schema (8 Tables)
+
+The mystery runs on an 8-table relational SQLite database (`lindenwood-mystery.db`):
+- `crime_scene_report`: Incident logs and security reports.
+- `person`: Registered campus individuals with names, addresses, and license IDs.
+- `interview`: Transcripts from witness and suspect interrogations.
+- `get_fit_now_member`: Campus fitness facility memberships and tiers.
+- `get_fit_now_check_in`: Gym turnstile badge check-in logs.
+- `drivers_license`: Department of Motor Vehicles registration records (plates, cars, physical traits).
+- `facebook_event_checkin`: Social event check-ins and concert attendance.
+- `income`: Annual income records linked by SSN.
+- `solution`: Automated database validation trigger for suspects.
+
+---
+
+## 🕵️‍♂️ Investigation Progression
+
 1. **Starting Point**:
    ```sql
-   SELECT * FROM security_report WHERE date = 20251018;
+   SELECT * FROM crime_scene_report WHERE date = 20251018 AND city = 'Lindenwood';
    ```
+
 2. **Witness Statements**:
-   - Witness 1 (Samantha Reed): Spellmann Info Desk &mdash; notices a member of the Lindenwood Robotics Club carrying a heavy duffel bag toward Evans Commons lot and leaving in a silver Honda with plate starting with `LU-8`.
-   - Witness 2 (Derek Zhang): North exit lounge &mdash; observes card swipe at Spellmann side door at 8:38 PM (`2038`).
-3. **Stage 1 &mdash; The Thief**:
-   - Cross-referencing `card_swipe_access`, `organization_member`, `vehicle`, and `parking_record` identifies the culprit: **Marcus Vance**.
-   - Entering `Marcus Vance` into the solution verifier triggers his confession: he was hired for $15,000 by an influential alumna to steal the trophy!
+   - Witness 1: Lives at the *last house on Northwestern Dr*.
+     ```sql
+     SELECT * FROM person WHERE address_street_name = 'Northwestern Dr' ORDER BY address_number DESC LIMIT 1;
+     ```
+     *(Note: 50 residents live on Northwestern Dr, so ordering by address number is required to find Morty Schapiro at 4919!)*
+   - Witness 2: *Annabel* living on *Franklin Ave*.
+     ```sql
+     SELECT * FROM person WHERE name LIKE 'Annabel%' AND address_street_name = 'Franklin Ave';
+     ```
+
+3. **Stage 1 &mdash; The Trophy Thief**:
+   - Querying the witness interviews in `interview` reveals:
+     - The suspect carried a "Get Fit Now Gym" bag starting with `48Z` (gold member) and fled in a car with plate containing `H42W`.
+     - Annabel recognized him from a workout on January 9 (`20180109`).
+   - Cross-referencing `get_fit_now_member`, `get_fit_now_check_in`, and `drivers_license` identifies the culprit: **Jeremy Bowers**.
+   - Submitting `Jeremy Bowers` triggers his confession: he was hired by a wealthy woman!
+
 4. **Stage 2 &mdash; The Mastermind**:
-   - Querying Marcus's interview transcript (`interview` table) reveals details about the mastermind: she attended the President's Alumni & Donor Gala on Oct 17, drives a red Porsche 911 with a vanity plate containing 'GOLD', and has an annual income exceeding $750,000.
-   - Cross-referencing `campus_event`, `event_attendance`, `vehicle`, `alumni_donor`, and `person` exposes: **Victoria Sterling**!
-   - Entering `Victoria Sterling` closes the case with a campus celebration!
+   - Interrogating Jeremy reveals the mastermind: a wealthy woman (height 65"-67", red hair, driving a Tesla Model S) who attended the SQL Symphony Concert 3 times in December 2017.
+   - Cross-referencing `facebook_event_checkin`, `drivers_license`, and `income` unmasks: **Miranda Priestly**!
 
 ---
 
@@ -69,13 +77,13 @@ Double-click `run_game.bat` or run:
 ```bash
 python serve.py
 ```
-This starts a lightweight server and opens `http://localhost:8000/index.html` in your browser.
+This launches a local web server and opens `http://localhost:8000/index.html`.
 
 ---
 
 ## 🎓 Course Project Features
-- **Student Authentication Modal**: Captures student name, ID, email, and course code.
-- **Automatic Session Persistence**: All progress and query history stored in `localStorage`.
+- **Student Detective Authentication**: Captures student name, ID, email, and section.
+- **Top-to-Bottom Story Flow**: Includes multiple inline runnable code chunks matching the Knight Lab architecture.
 - **Submission Hub**:
   - One-click **Print / Save PDF Report** with an official verification hash.
   - One-click **Download Submission JSON** containing the complete query audit log.
@@ -84,4 +92,4 @@ This starts a lightweight server and opens `http://localhost:8000/index.html` in
 ---
 
 ## 📜 Credits & License
-Created by **Sagar Kalauni** for **Lindenwood University** forensic data science and database curricula. Inspired by the educational mystery concept from the Northwestern University Knight Lab.
+Created by **Sagar Kalauni** for **Lindenwood University** computer science and data science curricula. Inspired by the open-source mystery concept from Northwestern University Knight Lab.

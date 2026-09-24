@@ -1,13 +1,11 @@
 /**
  * The Lindenwood SQL Mystery: The Missing Golden Lion
  * Game Engine, Database Driver & Course Project Submission Manager
- * Using the proven 8-table schema from SQL Murder Mystery
+ * Exact Flow & Pattern of SQL Murder Mystery
  */
 
 let dbWorker = null;
 let dbReady = false;
-let workbenchEditor = null;
-let currentResultsData = null;
 
 // Student Course Project Session State
 const DEFAULT_SESSION = {
@@ -64,9 +62,7 @@ function updateStudentUI() {
     }
   }
 
-  if (studentSession.thiefSolved || studentSession.mastermindSolved) {
-    renderSubmissionReport();
-  }
+  renderSubmissionReport();
 }
 
 function promptStudentLogin() {
@@ -118,62 +114,6 @@ function logQuery(sql) {
   saveStudentSession();
 }
 
-// Exactly the 8 tables from SQL Murder Mystery
-const SCHEMA_METADATA = {
-  crime_scene_report: [
-    { name: 'date', type: 'integer' },
-    { name: 'type', type: 'text' },
-    { name: 'description', type: 'text' },
-    { name: 'city', type: 'text' }
-  ],
-  drivers_license: [
-    { name: 'id', type: 'integer', pk: true },
-    { name: 'age', type: 'integer' },
-    { name: 'height', type: 'integer' },
-    { name: 'eye_color', type: 'text' },
-    { name: 'hair_color', type: 'text' },
-    { name: 'gender', type: 'text' },
-    { name: 'plate_number', type: 'text' },
-    { name: 'car_make', type: 'text' },
-    { name: 'car_model', type: 'text' }
-  ],
-  person: [
-    { name: 'id', type: 'integer', pk: true },
-    { name: 'name', type: 'text' },
-    { name: 'license_id', type: 'integer', fk: 'drivers_license(id)' },
-    { name: 'address_number', type: 'integer' },
-    { name: 'address_street_name', type: 'text' },
-    { name: 'ssn', type: 'char', fk: 'income(ssn)' }
-  ],
-  interview: [
-    { name: 'person_id', type: 'integer', fk: 'person(id)' },
-    { name: 'transcript', type: 'text' }
-  ],
-  get_fit_now_member: [
-    { name: 'id', type: 'text', pk: true },
-    { name: 'person_id', type: 'integer', fk: 'person(id)' },
-    { name: 'name', type: 'text' },
-    { name: 'membership_start_date', type: 'integer' },
-    { name: 'membership_status', type: 'text' }
-  ],
-  get_fit_now_check_in: [
-    { name: 'membership_id', type: 'text', fk: 'get_fit_now_member(id)' },
-    { name: 'check_in_date', type: 'integer' },
-    { name: 'check_in_time', type: 'integer' },
-    { name: 'check_out_time', type: 'integer' }
-  ],
-  facebook_event_checkin: [
-    { name: 'person_id', type: 'integer', fk: 'person(id)' },
-    { name: 'event_id', type: 'integer' },
-    { name: 'event_name', type: 'text' },
-    { name: 'date', type: 'integer' }
-  ],
-  income: [
-    { name: 'ssn', type: 'char', pk: true },
-    { name: 'annual_income', type: 'integer' }
-  ]
-};
-
 function initDatabase(dbPath = 'lindenwood-mystery.db') {
   updateStatus('Loading SQLite database...', 'loading');
 
@@ -196,8 +136,8 @@ function initDatabase(dbPath = 'lindenwood-mystery.db') {
       dbWorker.onmessage = function (event) {
         if (event.data.ready) {
           dbReady = true;
-          updateStatus('Database Online (8 Tables)', 'ready');
-          renderSchemaCards();
+          updateStatus('Database Ready (8 Tables Loaded)', 'ready');
+          enableExerciseButtons();
         }
       };
 
@@ -273,7 +213,6 @@ function buildDataTable(data) {
     return document.createTextNode('Query executed successfully. (0 rows returned)');
   }
 
-  currentResultsData = data[0];
   const columns = data[0].columns;
   const values = data[0].values || [];
 
@@ -300,154 +239,159 @@ function buildDataTable(data) {
   return table;
 }
 
-function renderSchemaCards() {
-  const container = document.getElementById('schema-cards-container');
-  if (!container) return;
+function enableExerciseButtons() {
+  document.querySelectorAll('input.sql-exercise-submit').forEach(btn => {
+    btn.disabled = false;
+  });
+}
 
-  container.innerHTML = '';
-  for (const [table, columns] of Object.entries(SCHEMA_METADATA)) {
-    const card = document.createElement('div');
-    card.className = 'lu-table-card';
+// Custom web component for each interactive SQL block (matches Knight Lab <sql-exercise>)
+class SqlExerciseElement extends HTMLElement {
+  connectedCallback() {
+    const question = this.getAttribute('data-question') || '';
+    const comment = this.getAttribute('data-comment') || '';
+    const defaultText = this.getAttribute('data-default-text') || '';
 
-    let colsHtml = '';
-    columns.forEach(col => {
-      const pkBadge = col.pk ? '<span class="lu-col-pk">PK</span>' : '';
-      const fkBadge = col.fk ? `<span class="lu-col-type">&rarr; ${col.fk}</span>` : '';
-      colsHtml += `
-        <li class="lu-column-item" onclick="insertSnippet('${col.name}')" title="Click to insert '${col.name}'">
-          <span>${col.name} ${pkBadge}</span>
-          <span class="lu-col-type">${col.type} ${fkBadge}</span>
-        </li>
-      `;
+    const homeDiv = document.createElement('div');
+    homeDiv.className = 'sqlExHomeDiv';
+
+    if (question) {
+      homeDiv.insertAdjacentHTML('beforeend', `<div class="sqlExQuestion">${question}</div>`);
+    }
+    if (comment) {
+      homeDiv.insertAdjacentHTML('beforeend', `<div class="sqlExComment">${comment}</div>`);
+    }
+
+    const form = document.createElement('form');
+    const inputArea = document.createElement('div');
+    inputArea.className = 'sqlExInputArea';
+
+    const textArea = document.createElement('textarea');
+    textArea.textContent = defaultText;
+    inputArea.appendChild(textArea);
+
+    const editor = CodeMirror.fromTextArea(textArea, {
+      mode: 'text/x-sql',
+      indentWithTabs: true,
+      smartIndent: true,
+      lineNumbers: true,
+      autoRefresh: true,
+      viewportMargin: Infinity
     });
 
-    card.innerHTML = `
-      <div class="lu-table-card-head">
-        <span class="lu-table-name">${table}</span>
-        <button class="lu-btn lu-btn-outline lu-btn-sm" onclick="previewTable('${table}')">Preview</button>
-      </div>
-      <ul class="lu-column-list">${colsHtml}</ul>
-    `;
-    container.appendChild(card);
+    const runBtn = document.createElement('input');
+    runBtn.type = 'submit';
+    runBtn.className = 'sql-exercise-submit';
+    runBtn.value = 'Run Query \u21e9';
+    runBtn.disabled = !dbReady;
+    inputArea.appendChild(runBtn);
+
+    const resetBtn = document.createElement('input');
+    resetBtn.type = 'button';
+    resetBtn.value = 'Reset';
+    resetBtn.onclick = () => {
+      editor.setValue(defaultText);
+      outputArea.innerHTML = '';
+    };
+    inputArea.appendChild(resetBtn);
+
+    form.appendChild(inputArea);
+
+    const outputArea = document.createElement('div');
+    outputArea.className = 'sqlExOutputArea';
+    form.appendChild(outputArea);
+
+    form.onsubmit = e => {
+      if (e) e.preventDefault();
+      outputArea.innerHTML = '<div style="color: var(--lu-gold); padding: 8px;">Executing query...</div>';
+
+      const code = editor.getValue();
+
+      executeSQL(
+        code,
+        results => {
+          outputArea.innerHTML = '';
+          if (results && results.length > 0) {
+            outputArea.appendChild(buildDataTable(results));
+
+            // Check if this was a solution query
+            if (code.toLowerCase().includes('solution') && results[0].values.length > 0) {
+              const val = String(results[0].values[0][0]);
+              handleSolutionResult(val, code);
+            }
+          } else {
+            outputArea.innerHTML = '<div class="returnOkay">Query executed successfully. (0 rows returned)</div>';
+          }
+        },
+        err => {
+          outputArea.innerHTML = `<div class="returnError">${err.message}</div>`;
+        }
+      );
+    };
+
+    homeDiv.appendChild(form);
+    this.appendChild(homeDiv);
   }
 }
 
-function previewTable(tableName) {
-  switchTab('investigation');
-  const sql = `SELECT * FROM ${tableName} LIMIT 10;`;
-  if (workbenchEditor) {
-    workbenchEditor.setValue(sql);
-    runWorkbenchQuery();
+if (!customElements.get('sql-exercise')) {
+  customElements.define('sql-exercise', SqlExerciseElement);
+}
+
+// Handle solution evaluation
+function handleSolutionResult(message, code) {
+  if (message.includes('brains') || message.includes('champagne')) {
+    // Solved Mastermind (Miranda Priestly)
+    studentSession.mastermindSolved = true;
+    studentSession.mastermindName = 'Miranda Priestly';
+    saveStudentSession();
+    renderSubmissionReport();
+  } else if (message.includes('caught who took') || message.includes('found who took') || message.includes('found the murderer')) {
+    // Solved Culprit (Jeremy Bowers)
+    studentSession.thiefSolved = true;
+    studentSession.thiefName = 'Jeremy Bowers';
+    saveStudentSession();
+    renderSubmissionReport();
   }
 }
 
-function insertSnippet(text) {
-  if (!workbenchEditor) return;
-  const doc = workbenchEditor.getDoc();
-  const cursor = doc.getCursor();
-  doc.replaceRange(text, cursor);
-  workbenchEditor.focus();
-}
-
-function runWorkbenchQuery() {
-  if (!workbenchEditor) return;
-  const sql = workbenchEditor.getValue().trim();
-  if (!sql) return;
-
-  const resultsBox = document.getElementById('workbench-results');
-  const countBadge = document.getElementById('results-count');
-  const timeBadge = document.getElementById('results-time');
-
-  resultsBox.innerHTML = '<div style="padding: 16px; color: var(--lu-gold);">Executing query...</div>';
-  const startTime = performance.now();
+function checkSolutionQuick(name) {
+  if (!name || !name.trim()) {
+    alert('Please enter a suspect name.');
+    return;
+  }
+  const clean = name.trim().replace(/'/g, "''");
+  const sql = `INSERT INTO solution VALUES (1, '${clean}'); SELECT value FROM solution;`;
+  const resultDiv = document.getElementById('quick-solution-result');
+  if (resultDiv) {
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = '<div style="color:var(--lu-gold);">Checking with campus security...</div>';
+  }
 
   executeSQL(
     sql,
     results => {
-      const duration = (performance.now() - startTime).toFixed(1);
-      resultsBox.innerHTML = '';
-      if (results && results.length > 0) {
-        const rowCount = results[0].values.length;
-        if (countBadge) countBadge.textContent = `${rowCount} rows returned`;
-        if (timeBadge) timeBadge.textContent = `${duration} ms`;
-        resultsBox.appendChild(buildDataTable(results));
-      } else {
-        if (countBadge) countBadge.textContent = `0 rows`;
-        if (timeBadge) timeBadge.textContent = `${duration} ms`;
-        resultsBox.innerHTML = '<div style="padding: 16px; color: var(--lu-text-muted);">Query executed successfully. (0 rows returned)</div>';
-      }
-    },
-    error => {
-      if (countBadge) countBadge.textContent = `Error`;
-      if (timeBadge) timeBadge.textContent = `--`;
-      resultsBox.innerHTML = `<div class="returnError">${error.message}</div>`;
-    }
-  );
-}
-
-function checkSolutionSuspect(suspectName) {
-  const verdictDiv = document.getElementById('solution-verdict');
-  if (!suspectName || !suspectName.trim()) {
-    if (verdictDiv) {
-      verdictDiv.className = 'lu-solution-verdict incorrect';
-      verdictDiv.style.display = 'block';
-      verdictDiv.textContent = 'Please enter a suspect name.';
-    }
-    return;
-  }
-
-  const cleanName = suspectName.trim().replace(/'/g, "''");
-  const testSql = `
-    INSERT INTO solution VALUES (1, '${cleanName}');
-    SELECT value FROM solution;
-  `;
-
-  executeSQL(
-    testSql,
-    results => {
-      if (results && results.length > 0 && results[0].values.length > 0) {
-        const message = results[0].values[0][0];
-        displayVerdict(message, cleanName);
+      if (resultDiv && results && results.length > 0 && results[0].values.length > 0) {
+        const msg = results[0].values[0][0];
+        resultDiv.innerHTML = msg.replace(/\n/g, '<br>');
+        if (msg.includes('champagne') || msg.includes('brains')) {
+          resultDiv.className = 'lu-solution-verdict mastermind';
+          handleSolutionResult(msg, sql);
+        } else if (msg.includes('caught who took') || msg.includes('found who took')) {
+          resultDiv.className = 'lu-solution-verdict correct';
+          handleSolutionResult(msg, sql);
+        } else {
+          resultDiv.className = 'lu-solution-verdict incorrect';
+        }
       }
     },
     err => {
-      if (verdictDiv) {
-        verdictDiv.className = 'lu-solution-verdict incorrect';
-        verdictDiv.style.display = 'block';
-        verdictDiv.textContent = 'Error checking solution: ' + err.message;
+      if (resultDiv) {
+        resultDiv.className = 'lu-solution-verdict incorrect';
+        resultDiv.textContent = 'Error checking solution: ' + err.message;
       }
     }
   );
-}
-
-function displayVerdict(message, suspectName) {
-  const verdictDiv = document.getElementById('solution-verdict');
-  if (!verdictDiv) return;
-
-  verdictDiv.style.display = 'block';
-  verdictDiv.innerHTML = message.replace(/\n/g, '<br>');
-
-  if (message.includes('brains') || message.includes('champagne')) {
-    // Solved Mastermind (Miranda Priestly)
-    verdictDiv.className = 'lu-solution-verdict mastermind';
-    studentSession.mastermindSolved = true;
-    studentSession.mastermindName = suspectName;
-    saveStudentSession();
-    renderSubmissionReport();
-  } else if (message.includes('found who took') || message.includes('found the murderer')) {
-    // Solved Culprit (Jeremy Bowers)
-    verdictDiv.className = 'lu-solution-verdict correct';
-    studentSession.thiefSolved = true;
-    studentSession.thiefName = suspectName;
-    saveStudentSession();
-    renderSubmissionReport();
-
-    // Reveal the Mastermind Stage 2 challenge note dynamically!
-    const s2Card = document.getElementById('stage-two-challenge-card');
-    if (s2Card) s2Card.style.display = 'block';
-  } else {
-    verdictDiv.className = 'lu-solution-verdict incorrect';
-  }
 }
 
 function renderSubmissionReport() {
@@ -468,13 +412,13 @@ function renderSubmissionReport() {
         <div><span class="lu-cert-label">Student ID:</span> <span class="lu-cert-val">${escapeHtml(studentSession.studentId || 'N/A')}</span></div>
         <div><span class="lu-cert-label">Course / Section:</span> <span class="lu-cert-val">${escapeHtml(studentSession.course || 'N/A')}</span></div>
         <div><span class="lu-cert-label">Student Email:</span> <span class="lu-cert-val">${escapeHtml(studentSession.email || 'N/A')}</span></div>
-        <div><span class="lu-cert-label">Submission Date:</span> <span class="lu-cert-val">${new Date().toLocaleString()}</span></div>
-        <div><span class="lu-cert-label">Total Forensic Queries:</span> <span class="lu-cert-val">${studentSession.queriesRun.length}</span></div>
+        <div><span class="lu-cert-label">Date &amp; Time:</span> <span class="lu-cert-val">${new Date().toLocaleString()}</span></div>
+        <div><span class="lu-cert-label">Forensic Queries:</span> <span class="lu-cert-val">${studentSession.queriesRun.length}</span></div>
       </div>
 
       <div class="lu-cert-status">
-        <p><strong>Culprit Identified:</strong> ${studentSession.thiefSolved ? '&#9989; ' + escapeHtml(studentSession.thiefName) : '&#10060; Unsolved'}</p>
-        <p style="margin-top:4px;"><strong>Mastermind Exposed:</strong> ${studentSession.mastermindSolved ? '&#9989; ' + escapeHtml(studentSession.mastermindName) : '&#10060; Unsolved'}</p>
+        <p><strong>Culprit (Jeremy Bowers):</strong> ${studentSession.thiefSolved ? '&#9989; Solved' : '&#10060; Unsolved'}</p>
+        <p style="margin-top:4px;"><strong>Mastermind (Miranda Priestly):</strong> ${studentSession.mastermindSolved ? '&#9989; Solved' : '&#10060; Unsolved'}</p>
       </div>
 
       <div style="margin-bottom:16px;">
@@ -543,7 +487,7 @@ Email: ${studentSession.email}
 Timestamp: ${new Date().toLocaleString()}
 
 FINDINGS:
-- Culprit: ${studentSession.thiefSolved ? studentSession.thiefName : 'Incomplete'}
+- Trophy Thief: ${studentSession.thiefSolved ? studentSession.thiefName : 'Incomplete'}
 - Mastermind: ${studentSession.mastermindSolved ? studentSession.mastermindName : 'Incomplete'}
 - Forensic Queries Executed: ${studentSession.queriesRun.length}
 - Verification Token: ${generateVerificationCode()}
@@ -555,57 +499,6 @@ FINDINGS:
   });
 }
 
-function exportCurrentToCSV() {
-  if (!currentResultsData) {
-    alert('No query results available to export.');
-    return;
-  }
-
-  const { columns, values } = currentResultsData;
-  let csv = columns.map(c => `"${c.replace(/"/g, '""')}"`).join(',') + '\n';
-
-  values.forEach(row => {
-    csv += row.map(val => `"${String(val ?? '').replace(/"/g, '""')}"`).join(',') + '\n';
-  });
-
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'lindenwood_lion_query_results.csv';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-}
-
-function startMystery() {
-  const poster = document.getElementById('mystery-poster');
-  const mainContent = document.getElementById('mystery-main-content');
-  if (poster) poster.style.display = 'none';
-  if (mainContent) {
-    mainContent.style.display = 'block';
-    mainContent.scrollIntoView({ behavior: 'smooth' });
-  }
-  switchTab('investigation');
-}
-
-function switchTab(tabId) {
-  document.querySelectorAll('.lu-tab').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.tab === tabId);
-  });
-  document.querySelectorAll('.tab-content').forEach(section => {
-    section.classList.toggle('active', section.id === `tab-${tabId}`);
-  });
-
-  if (tabId === 'investigation' && workbenchEditor) {
-    setTimeout(() => workbenchEditor.refresh(), 50);
-  }
-
-  if (tabId === 'submission') {
-    renderSubmissionReport();
-  }
-}
-
 function escapeHtml(str) {
   if (!str) return '';
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -613,27 +506,16 @@ function escapeHtml(str) {
 
 window.addEventListener('DOMContentLoaded', () => {
   loadStudentSession();
+  initDatabase('lindenwood-mystery.db');
 
-  const workbenchTextarea = document.getElementById('workbench-code');
-  if (workbenchTextarea) {
-    workbenchEditor = CodeMirror.fromTextArea(workbenchTextarea, {
-      mode: 'text/x-sql',
-      indentWithTabs: true,
-      smartIndent: true,
-      lineNumbers: true,
-      autoRefresh: true,
-      viewportMargin: 10
-    });
-
-    workbenchEditor.setOption('extraKeys', {
-      'Ctrl-Enter': () => runWorkbenchQuery(),
-      'Cmd-Enter': () => runWorkbenchQuery()
+  // Toggle schema diagram
+  const schemaToggle = document.getElementById('show-schema-link');
+  const schemaImg = document.getElementById('schema-image-container');
+  if (schemaToggle && schemaImg) {
+    schemaToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      schemaImg.style.display = schemaImg.style.display === 'none' ? 'block' : 'none';
+      schemaToggle.textContent = schemaImg.style.display === 'none' ? 'click here to show the schema diagram' : 'click here to hide the schema diagram';
     });
   }
-
-  document.querySelectorAll('.lu-tab').forEach(tab => {
-    tab.addEventListener('click', () => switchTab(tab.dataset.tab));
-  });
-
-  initDatabase('lindenwood-mystery.db');
 });
