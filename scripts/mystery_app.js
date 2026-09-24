@@ -1,6 +1,7 @@
 /**
  * The Lindenwood SQL Mystery: The Missing Golden Lion
  * Game Engine, Database Driver & Course Project Submission Manager
+ * Using the proven 8-table schema from SQL Murder Mystery
  */
 
 let dbWorker = null;
@@ -25,7 +26,6 @@ const DEFAULT_SESSION = {
 
 let studentSession = { ...DEFAULT_SESSION };
 
-// Load student session from localStorage
 function loadStudentSession() {
   try {
     const raw = localStorage.getItem('lu_golden_lion_session');
@@ -64,7 +64,6 @@ function updateStudentUI() {
     }
   }
 
-  // Update submission report if view is open
   if (studentSession.thiefSolved || studentSession.mastermindSolved) {
     renderSubmissionReport();
   }
@@ -119,119 +118,62 @@ function logQuery(sql) {
   saveStudentSession();
 }
 
-// Database tables schema metadata
+// Exactly the 8 tables from SQL Murder Mystery
 const SCHEMA_METADATA = {
-  security_report: [
-    { name: 'id', type: 'integer', pk: true },
+  crime_scene_report: [
     { name: 'date', type: 'integer' },
-    { name: 'time', type: 'integer' },
-    { name: 'incident_type', type: 'text' },
-    { name: 'building_id', type: 'text', fk: 'building(id)' },
-    { name: 'description', type: 'text' }
+    { name: 'type', type: 'text' },
+    { name: 'description', type: 'text' },
+    { name: 'city', type: 'text' }
+  ],
+  drivers_license: [
+    { name: 'id', type: 'integer', pk: true },
+    { name: 'age', type: 'integer' },
+    { name: 'height', type: 'integer' },
+    { name: 'eye_color', type: 'text' },
+    { name: 'hair_color', type: 'text' },
+    { name: 'gender', type: 'text' },
+    { name: 'plate_number', type: 'text' },
+    { name: 'car_make', type: 'text' },
+    { name: 'car_model', type: 'text' }
   ],
   person: [
     { name: 'id', type: 'integer', pk: true },
     { name: 'name', type: 'text' },
-    { name: 'email', type: 'text' },
-    { name: 'role', type: 'text' },
-    { name: 'phone', type: 'text' },
-    { name: 'ssn', type: 'text' }
-  ],
-  student: [
-    { name: 'person_id', type: 'integer', pk: true, fk: 'person(id)' },
-    { name: 'student_id_code', type: 'text' },
-    { name: 'major', type: 'text' },
-    { name: 'class_year', type: 'text' },
-    { name: 'gpa', type: 'real' },
-    { name: 'dorm_building', type: 'text' },
-    { name: 'dorm_room', type: 'text' }
-  ],
-  faculty_staff: [
-    { name: 'person_id', type: 'integer', pk: true, fk: 'person(id)' },
-    { name: 'department', type: 'text' },
-    { name: 'title', type: 'text' },
-    { name: 'office_building', type: 'text' },
-    { name: 'office_room', type: 'text' }
-  ],
-  alumni_donor: [
-    { name: 'person_id', type: 'integer', pk: true, fk: 'person(id)' },
-    { name: 'graduation_year', type: 'integer' },
-    { name: 'profession', type: 'text' },
-    { name: 'annual_income', type: 'integer' },
-    { name: 'total_donations', type: 'integer' }
-  ],
-  organization: [
-    { name: 'id', type: 'text', pk: true },
-    { name: 'name', type: 'text' },
-    { name: 'category', type: 'text' },
-    { name: 'meeting_building', type: 'text', fk: 'building(id)' }
-  ],
-  organization_member: [
-    { name: 'org_id', type: 'text', pk: true, fk: 'organization(id)' },
-    { name: 'person_id', type: 'integer', pk: true, fk: 'person(id)' },
-    { name: 'role', type: 'text' },
-    { name: 'joined_date', type: 'integer' }
-  ],
-  building: [
-    { name: 'id', type: 'text', pk: true },
-    { name: 'name', type: 'text' },
-    { name: 'campus_zone', type: 'text' },
-    { name: 'floors', type: 'integer' }
-  ],
-  room: [
-    { name: 'id', type: 'text', pk: true },
-    { name: 'building_id', type: 'text', fk: 'building(id)' },
-    { name: 'room_number', type: 'text' },
-    { name: 'room_type', type: 'text' }
-  ],
-  card_swipe_access: [
-    { name: 'id', type: 'integer', pk: true },
-    { name: 'person_id', type: 'integer', fk: 'person(id)' },
-    { name: 'building_id', type: 'text', fk: 'building(id)' },
-    { name: 'room_id', type: 'text', fk: 'room(id)' },
-    { name: 'swipe_date', type: 'integer' },
-    { name: 'swipe_time', type: 'integer' },
-    { name: 'access_result', type: 'text' }
-  ],
-  vehicle: [
-    { name: 'id', type: 'integer', pk: true },
-    { name: 'person_id', type: 'integer', fk: 'person(id)' },
-    { name: 'license_plate', type: 'text' },
-    { name: 'car_make', type: 'text' },
-    { name: 'car_model', type: 'text' },
-    { name: 'car_color', type: 'text' },
-    { name: 'permit_type', type: 'text' }
-  ],
-  parking_record: [
-    { name: 'id', type: 'integer', pk: true },
-    { name: 'vehicle_id', type: 'integer', fk: 'vehicle(id)' },
-    { name: 'lot_name', type: 'text' },
-    { name: 'entry_date', type: 'integer' },
-    { name: 'entry_time', type: 'integer' },
-    { name: 'exit_time', type: 'integer' }
-  ],
-  campus_event: [
-    { name: 'id', type: 'integer', pk: true },
-    { name: 'event_name', type: 'text' },
-    { name: 'event_date', type: 'integer' },
-    { name: 'start_time', type: 'integer' },
-    { name: 'end_time', type: 'integer' },
-    { name: 'building_id', type: 'text', fk: 'building(id)' },
-    { name: 'description', type: 'text' }
-  ],
-  event_attendance: [
-    { name: 'event_id', type: 'integer', pk: true, fk: 'campus_event(id)' },
-    { name: 'person_id', type: 'integer', pk: true, fk: 'person(id)' },
-    { name: 'check_in_time', type: 'integer' }
+    { name: 'license_id', type: 'integer', fk: 'drivers_license(id)' },
+    { name: 'address_number', type: 'integer' },
+    { name: 'address_street_name', type: 'text' },
+    { name: 'ssn', type: 'char', fk: 'income(ssn)' }
   ],
   interview: [
-    { name: 'person_id', type: 'integer', pk: true, fk: 'person(id)' },
-    { name: 'interview_date', type: 'integer' },
+    { name: 'person_id', type: 'integer', fk: 'person(id)' },
     { name: 'transcript', type: 'text' }
+  ],
+  get_fit_now_member: [
+    { name: 'id', type: 'text', pk: true },
+    { name: 'person_id', type: 'integer', fk: 'person(id)' },
+    { name: 'name', type: 'text' },
+    { name: 'membership_start_date', type: 'integer' },
+    { name: 'membership_status', type: 'text' }
+  ],
+  get_fit_now_check_in: [
+    { name: 'membership_id', type: 'text', fk: 'get_fit_now_member(id)' },
+    { name: 'check_in_date', type: 'integer' },
+    { name: 'check_in_time', type: 'integer' },
+    { name: 'check_out_time', type: 'integer' }
+  ],
+  facebook_event_checkin: [
+    { name: 'person_id', type: 'integer', fk: 'person(id)' },
+    { name: 'event_id', type: 'integer' },
+    { name: 'event_name', type: 'text' },
+    { name: 'date', type: 'integer' }
+  ],
+  income: [
+    { name: 'ssn', type: 'char', pk: true },
+    { name: 'annual_income', type: 'integer' }
   ]
 };
 
-// Initialize DB worker and load SQLite database
 function initDatabase(dbPath = 'lindenwood-mystery.db') {
   updateStatus('Loading SQLite database...', 'loading');
 
@@ -254,7 +196,7 @@ function initDatabase(dbPath = 'lindenwood-mystery.db') {
       dbWorker.onmessage = function (event) {
         if (event.data.ready) {
           dbReady = true;
-          updateStatus('Database Online (15 Tables)', 'ready');
+          updateStatus('Database Online (8 Tables)', 'ready');
           renderSchemaCards();
         }
       };
@@ -285,7 +227,6 @@ function updateStatus(text, state) {
   }
 }
 
-// SQL Execution dispatcher
 let queryCallbackId = 2;
 const pendingCallbacks = new Map();
 
@@ -444,7 +385,6 @@ function runWorkbenchQuery() {
   );
 }
 
-// Solution check: runs directly against SQLite solution table trigger!
 function checkSolutionSuspect(suspectName) {
   const verdictDiv = document.getElementById('solution-verdict');
   if (!suspectName || !suspectName.trim()) {
@@ -487,15 +427,15 @@ function displayVerdict(message, suspectName) {
   verdictDiv.style.display = 'block';
   verdictDiv.innerHTML = message.replace(/\n/g, '<br>');
 
-  if (message.includes('mastermind')) {
-    // Solved Mastermind (Stage 2)!
+  if (message.includes('brains') || message.includes('champagne')) {
+    // Solved Mastermind (Miranda Priestly)
     verdictDiv.className = 'lu-solution-verdict mastermind';
     studentSession.mastermindSolved = true;
     studentSession.mastermindName = suspectName;
     saveStudentSession();
     renderSubmissionReport();
-  } else if (message.includes('trophy thief')) {
-    // Solved Thief (Stage 1)!
+  } else if (message.includes('found who took') || message.includes('found the murderer')) {
+    // Solved Culprit (Jeremy Bowers)
     verdictDiv.className = 'lu-solution-verdict correct';
     studentSession.thiefSolved = true;
     studentSession.thiefName = suspectName;
@@ -533,7 +473,7 @@ function renderSubmissionReport() {
       </div>
 
       <div class="lu-cert-status">
-        <p><strong>Thief Identified:</strong> ${studentSession.thiefSolved ? '&#9989; ' + escapeHtml(studentSession.thiefName) : '&#10060; Unsolved'}</p>
+        <p><strong>Culprit Identified:</strong> ${studentSession.thiefSolved ? '&#9989; ' + escapeHtml(studentSession.thiefName) : '&#10060; Unsolved'}</p>
         <p style="margin-top:4px;"><strong>Mastermind Exposed:</strong> ${studentSession.mastermindSolved ? '&#9989; ' + escapeHtml(studentSession.mastermindName) : '&#10060; Unsolved'}</p>
       </div>
 
@@ -572,8 +512,8 @@ function downloadSubmissionJSON() {
       course: studentSession.course
     },
     findings: {
-      thiefIdentified: studentSession.thiefSolved,
-      thiefName: studentSession.thiefName,
+      culpritIdentified: studentSession.thiefSolved,
+      culpritName: studentSession.thiefName,
       mastermindExposed: studentSession.mastermindSolved,
       mastermindName: studentSession.mastermindName,
       queriesExecuted: studentSession.queriesRun.length
@@ -603,7 +543,7 @@ Email: ${studentSession.email}
 Timestamp: ${new Date().toLocaleString()}
 
 FINDINGS:
-- Trophy Thief: ${studentSession.thiefSolved ? studentSession.thiefName : 'Incomplete'}
+- Culprit: ${studentSession.thiefSolved ? studentSession.thiefName : 'Incomplete'}
 - Mastermind: ${studentSession.mastermindSolved ? studentSession.mastermindName : 'Incomplete'}
 - Forensic Queries Executed: ${studentSession.queriesRun.length}
 - Verification Token: ${generateVerificationCode()}

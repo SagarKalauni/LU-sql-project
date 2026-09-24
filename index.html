@@ -133,11 +133,11 @@
             </p>
             <div style="background:#121319; border:1px solid var(--lu-border-gold); padding:10px 16px; border-radius:6px; margin:10px 0; font-family:var(--lu-font-mono); font-size:0.9rem;">
               &bull; <strong>Date:</strong> October 18, 2025 (<code>20251018</code>)<br>
-              &bull; <strong>Location:</strong> Lindenwood University<br>
+              &bull; <strong>Location:</strong> Lindenwood University (<code>city = 'Lindenwood'</code>)<br>
               &bull; <strong>Incident:</strong> Missing Golden Lion Trophy
             </div>
             <p style="color:var(--lu-gold-light); font-weight:600;">
-              Your Mission: Retrieve the incident report, follow the evidence through the database, and discover who took the Golden Lion Trophy!
+              Your Mission: Retrieve the incident report from <code>crime_scene_report</code>, follow the evidence through the database, and discover who took the Golden Lion Trophy!
             </p>
           </div>
         </div>
@@ -154,19 +154,25 @@
           </div>
 
           <!-- Quick Clue Preset Chips -->
-          <div style="font-size:0.85rem; color:var(--lu-text-muted); margin-bottom:6px;">Investigation Presets:</div>
+          <div style="font-size:0.85rem; color:var(--lu-text-muted); margin-bottom:6px;">Investigation Guide:</div>
           <div class="lu-quick-queries">
-            <button class="lu-chip" onclick="workbenchEditor.setValue('SELECT name FROM sqlite_master WHERE type = \'table\';'); runWorkbenchQuery();">
-              1. Show Database Tables
+            <button class="lu-chip" onclick="workbenchEditor.setValue('SELECT * FROM crime_scene_report WHERE date = 20251018;'); runWorkbenchQuery();">
+              1. Retrieve Oct 18 Incident Report
             </button>
-            <button class="lu-chip" onclick="workbenchEditor.setValue('SELECT * FROM security_report WHERE date = 20251018;'); runWorkbenchQuery();">
-              2. Retrieve Oct 18 Incident Report
+            <button class="lu-chip" onclick="workbenchEditor.setValue('SELECT * FROM person WHERE address_street_name = \'Northwestern Dr\' ORDER BY address_number DESC LIMIT 1;'); runWorkbenchQuery();">
+              2. 1st Witness (Northwestern Dr)
             </button>
-            <button class="lu-chip" onclick="workbenchEditor.setValue('SELECT sql FROM sqlite_master WHERE name = \'security_report\';'); runWorkbenchQuery();">
-              3. Check Report Schema
+            <button class="lu-chip" onclick="workbenchEditor.setValue('SELECT * FROM person WHERE name LIKE \'Annabel%\' AND address_street_name = \'Franklin Ave\';'); runWorkbenchQuery();">
+              3. 2nd Witness (Annabel)
             </button>
-            <button class="lu-chip" onclick="workbenchEditor.setValue('SELECT * FROM building;'); runWorkbenchQuery();">
-              4. Explore Campus Buildings
+            <button class="lu-chip" onclick="workbenchEditor.setValue('SELECT p.name, i.transcript \nFROM interview i \nJOIN person p ON i.person_id = p.id \nWHERE p.id IN (14887, 16371);'); runWorkbenchQuery();">
+              4. Witness Interviews
+            </button>
+            <button class="lu-chip" onclick="workbenchEditor.setValue('SELECT * FROM get_fit_now_member WHERE id LIKE \'48Z%\' AND membership_status = \'gold\';'); runWorkbenchQuery();">
+              5. Gym Members (48Z Gold)
+            </button>
+            <button class="lu-chip" onclick="workbenchEditor.setValue('SELECT p.name, d.* \nFROM person p \nJOIN drivers_license d ON d.id = p.license_id \nWHERE p.id IN (28819, 67318) AND plate_number LIKE \'%H42W%\';'); runWorkbenchQuery();">
+              6. Check Car License Plate (H42W)
             </button>
           </div>
 
@@ -180,7 +186,7 @@
               </div>
             </div>
             <textarea id="workbench-code">SELECT * 
-  FROM security_report 
+  FROM crime_scene_report 
  WHERE date = 20251018;</textarea>
           </div>
 
@@ -210,15 +216,15 @@
         <div class="lu-card">
           <div class="lu-card-header">
             <h3 class="lu-card-title">
-              <span>&#128451;</span> Lindenwood University Database Schema
+              <span>&#128451;</span> Relational Database Schema
             </h3>
-            <span style="font-size:0.85rem; color:var(--lu-gold);">14 Relational Tables</span>
+            <span style="font-size:0.85rem; color:var(--lu-gold);">8 Connected Tables</span>
           </div>
           <p style="color:var(--lu-text-muted); margin-bottom:16px;">
-            Explore how students, staff, card swipe access, vehicles, parking records, events, and interviews connect across campus:
+            Examine how the tables link together across primary keys and foreign keys:
           </p>
           <div style="text-align: center; background: #0E0F14; padding: 12px; border-radius: 8px; border: 1px solid var(--lu-border); overflow-x: auto;">
-            <img src="schema.svg" alt="Lindenwood Database Relational Schema" style="max-width: 100%; height: auto; border-radius: 6px;">
+            <img src="schema.png" alt="Database Relational Schema Diagram" style="max-width: 100%; height: auto; border-radius: 6px;">
           </div>
         </div>
 
@@ -249,7 +255,7 @@
             </h3>
           </div>
           <p style="line-height: 1.7; margin-bottom:16px;">
-            Who took the Golden Lion Trophy? Once you have pieced together the witness statements, door swipes, and campus records, enter the suspect's name below to verify your deduction against the police database.
+            Who took the Golden Lion Trophy? Once you have pieced together the witness statements, gym membership bags, and car license plates, enter the suspect's name below:
           </p>
 
           <!-- Suspect Input Box -->
@@ -275,10 +281,10 @@
               </h3>
             </div>
             <p style="line-height:1.7;">
-              The person who took the trophy has confessed, but they were working for an influential campus mastermind who orchestrated the entire heist!
+              The person who took the trophy has confessed, but they were working for an influential mastermind who orchestrated the entire heist!
             </p>
             <p style="line-height:1.7; margin-top:8px;">
-              Query the thief's interview transcript in the <code>interview</code> table to follow the money, luxury vehicle, and gala attendance records. When you identify the true mastermind, enter their name above to close the case!
+              Query the culprit's interview transcript in the <code>interview</code> table to follow the concert attendance, luxury vehicle, and income records. When you identify the true mastermind, enter their name above to close the case!
             </p>
           </div>
 
